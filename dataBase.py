@@ -7,3 +7,4 @@ finding=cursor.execute("""SELECT Name, Composer from tracks""" )
 for rows in finding:
 	print(rows)
 dataBase.close()
+
