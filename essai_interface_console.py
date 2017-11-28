@@ -23,73 +23,94 @@ def edit():
     """
     option de modification
     """
-    os.system("cls")
-    print("quelle ligne voulez-vous modifier?")
     tableau = getAllDep()
-    for line in tableau:
-        print((line+1)+".  Table: "+line[0]+"relation: "+line[1]+" --> "+line[2])
+    if len(tableau)!= 0:
+        print("la table ne contient aucun element a modifier")
+    else:
+        print("quelle ligne voulez-vous modifier?")
+        increment = 1
+        for line in tableau:
+            print(increment+".  Table: "+line[0]+"relation: "+line[1]+" --> "+line[2])
+            increment  += 1
         
-    try:
-        a = input("numero de la ligne : ")
-        nbre = float(a)
-        if nbre >= (len(tableau) -1) or nbre <= 0:
-           print("error integer")
+        try:
+            a = input("numero de la ligne : ")
+            nbre = float(a)
+            if nbre >= (len(tableau) -1) or nbre <= 0:
+                print("error integer")
            
            
-        else:
-           print("que voulez-vous modifier?")
-           print("1. table")
-           print("2. lhs")
-           print("3. rhs")
-           nbre = input("entrez le nbre: ")
-           new = input("rentrez les nouvelles donnees :")
-           if nbre == 3 and new.count(" ") != 0:
-              error
-           else:
-              print("votre donnee a bien ete modifiee")
-              main_menu()
-    except ValueError:
-        print("invalid syntax, try again")
+            else:
+                print("que voulez-vous modifier?")
+                print("1. table")
+                print("2. lhs")
+                print("3. rhs")
+                b = input("entrez le nbre: ")
+                newnbre = float(b)
+                new = input("rentrez les nouvelles donnees :")
+                if newnbre == 1:
+                    editTableDep(tableau[nbre -1][0],tableau[nbre -1][1],tableau[nbre -1][2],new)
+                elif newnbre == 2:
+                    ediLhsDep(tableau[nbre -1][0],tableau[nbre -1][1],tableau[nbre -1][2],new):
+                elif newnbre == 3:
+                    if new.count(" ") != 0:
+                        print("error syntax")
+                        edit()
+                    else:
+                        editRhsDep(tableau[nbre -1][0],tableau[nbre -1][1],tableau[nbre -1][2],new):
+                print("votre donnee a bien ete modifiee")
+                main_menu()
+        except ValueError:
+            print("invalid syntax, try again")
         
 
 def delete():
     """
     option de suppression
     """
-    os.system("cls")
-    print("quelle ligne voulez-vous supprimer?")
     tableau = getAllDep()
-    for line in tableau:
-        print((line+1)+".  Table: "+line[0]+"relation: "+line[1]+" --> "+line[2])
+    if len(tableau)!= 0:
+        print("la table ne contient aucun element a supprimer")
+    else:
+        print("quelle ligne voulez-vous supprimer?")
+        increment = 1
+        for line in tableau:
+            print(increment+".  Table: "+line[0]+"relation: "+line[1]+" --> "+line[2])
+            increment += 1
 
-    try: 
-        a = input("numero de la ligne : ")
-        nbre = float(a)
-        if nbre >= (len(tableau) -1) or nbre <= 0:
-           print("error integer")
-        else:
-           verif = input("la suppression est definitive voulez-vous vraiment continuer?(Y/N)")
-           if verif == "Y" or verif == "y":
-              print("votre dependance a bien ete supprimee")
-              init()
-           elif verif == "N" or verif == "n":
-              delete()
-           else:
-              print("erreur synthaxe")
-              delete()
-    except ValueError:
-        print("invalid syntax, try again")
+        try: 
+            a = input("numero de la ligne : ")
+            nbre = float(a)
+            if nbre >= (len(tableau) -1) or nbre <= 0:
+                print("error integer")
+            else:
+                verif = input("la suppression est definitive voulez-vous vraiment continuer?(Y/N)")
+                if verif == "Y" or verif == "y":
+                    removeDep(tableau[nbre -1][0],tableau[nbre -1][1],tableau[nbre -1][2])
+                    print("votre dependance a bien ete supprimee")
+                    main_menu()
+                elif verif == "N" or verif == "n":
+                    delete()
+                else:
+                    print("erreur synthaxe")
+                    delete()
+        except ValueError:
+            print("invalid syntax, try again")
 
 def analyse():
     """
     option d analyse
     """
-    os.system("cls")
-    print("quelle ligne voulez-vous analyser?")
     tableau = getAllDep()
-    for line in tableau:
-        print((line+1)+".  Table: "+line[0]+"relation: "+line[1]+" --> "+line[2])
-        
+    if len(tableau)!= 0:
+        print("la table ne contient aucun element a analyser")
+    else:
+        print("quelle ligne voulez-vous analyser?")
+        increment = 1
+        for line in tableau:
+            print(increment+".  Table: "+line[0]+"relation: "+line[1]+" --> "+line[2])
+            increment += 1
+
     try:
         a = input("numero de la ligne : ")
         nbre = float(a)
@@ -109,7 +130,6 @@ def analyse():
         print("invalid syntax, try again")
 
 def main_menu():
-
     """
     fonction menu de base du programme
     """
@@ -144,7 +164,7 @@ def main_menu():
 
 def init():
     bdd=input("inserer la base de donnee:")
-    #connect(bdd)
+    connect(bdd)
     main_menu()
 
 init()
