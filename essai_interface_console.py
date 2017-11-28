@@ -62,8 +62,8 @@ def edit():
                 main_menu()
         except ValueError:
             print("invalid syntax, try again")
-        
 
+            
 def delete():
     """
     option de suppression
