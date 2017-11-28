@@ -55,12 +55,12 @@ def getDep(relation):
 	cursor.execute(""" SELECT * FROM FuncDep """)
 	retour=[]
 	for tuples in cursor:
-		if(tuples[0]==relation){
+		if tuples[0]==relation:
 			line=[]
 			for item in line:
 				line.append(item)
 			retour.append(line)
-		}
+		
 
 	return retour
 def getAllDep():
