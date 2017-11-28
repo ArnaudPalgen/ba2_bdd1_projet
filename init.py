@@ -2,13 +2,11 @@ import sqlite3
 
 db=None
 cursor=None
-
 def connect(bdd):
 	db=sqlite3.connect(bdd)
 	cursor=db.cursor()
 
-	cursor.execute(""" CREATE TABLE IF NOT EXITS FuncDep(
-		table TEXT NOT NULL, lhs TEXT NOT NULL, rhs TEXT NOT NULL, PRIMARY KEY(table, lhs, rhs))""")
+	cursor.execute("""CREATE TABLE IF NOT EXISTS FuncDep('table' TEXT NOT NULL, lhs TEXT NOT NULL, rhs TEXT NOT NULL, PRIMARY KEY('table', lhs, rhs))""")
 	db.commit()
 
 def insertDep(table, lhs, rhs):
@@ -38,6 +36,8 @@ def editRhsDep(tableData, lhsData, rhsData, newData):
 	db.commit()
 
 def getTableName():
+	db=sqlite3.connect('tests')
+	cursor=db.cursor()
 	cursor.execute("""SELECT name FROM sqlite_master WHERE type='table'""")
 	retour=[]
 	for data in cursor.fetchone():
@@ -52,6 +52,8 @@ def getTableAttribute(tableName):
 	return retour
 
 def getDep(relation):
+	db=sqlite3.connect('tests')
+	cursor=db.cursor()
 	cursor.execute(""" SELECT * FROM FuncDep """)
 	retour=[]
 	for tuples in cursor:
@@ -64,6 +66,8 @@ def getDep(relation):
 
 	return retour
 def getAllDep():
+	db=sqlite3.connect('tests')
+	cursor=db.cursor()
 	retour=[]
 	rels=getTableName()
 	for tables in rels:

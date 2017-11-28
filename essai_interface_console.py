@@ -23,11 +23,13 @@ def edit():
     """
     option de modification
     """
-    os.system("cls")
     print("quelle ligne voulez-vous modifier?")
     tableau = getAllDep()
+    increment=1
+    print("totoooooo")
     for line in tableau:
-        print((line+1)+".  Table: "+line[0]+"relation: "+line[1]+" --> "+line[2])
+        print(increment+".  Table: "+line[0]+"relation: "+line[1]+" --> "+line[2])
+        increment+=1
         
     try:
         a = input("numero de la ligne : ")
@@ -144,7 +146,7 @@ def main_menu():
 
 def init():
     bdd=input("inserer la base de donnee:")
-    #connect(bdd)
+    connect(bdd)
     main_menu()
 
 init()

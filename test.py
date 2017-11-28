@@ -6,6 +6,8 @@ cursor=db.cursor()
 #creer la table
 cursor.execute("""CREATE TABLE IF NOT EXISTS unif(
 	prof TEXT NOT NULL, cours TEXT NOT NULL, heure INTEGER NOT NULL )""")
+#cursor.execute("""CREATE TABLE IF NOT EXISTS FuncDep(
+#	'table' TEXT NOT NULL, lhs TEXT NOT NULL, rhs TEXT NOT NULL, PRIMARY KEY('table', lhs, rhs))""")
 
 #inserer les donnees
 cursor.execute(""" INSERT INTO unif(prof, cours, heure) VALUES(?, ?, ?) """, ("arnaud", "info", 123) )
