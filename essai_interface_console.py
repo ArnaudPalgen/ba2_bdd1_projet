@@ -1,11 +1,14 @@
-from init import *
+from DataBaseHandler import *
 import os
+
+dbh = None
+
 
 def add():
     """
     option de creation
     """
-    os.system("cls")
+    cls()
     print("rentrer les elements suivants :")
     aTables = input("nom de la table : ")
     aLhs = input("partie gauche de la dependance fonctionnelle : ")
@@ -15,7 +18,7 @@ def add():
         print("error synthax")
         add()
     else:
-        insertDep(aTables, aLhs, aRhs)
+        dbh.insertDep(aTables, aLhs, aRhs)
         print ("votre dependance a bien ete ajoutee")
         main_menu()
 
@@ -23,6 +26,7 @@ def edit():
     """
     option de modification
     """
+    cls()
     tableau = getAllDep()
     if len(tableau)!= 0:
         print("la table ne contient aucun element a modifier")
@@ -41,6 +45,7 @@ def edit():
            
            
             else:
+                cls()
                 print("que voulez-vous modifier?")
                 print("1. table")
                 print("2. lhs")
@@ -49,15 +54,15 @@ def edit():
                 newnbre = float(b)
                 new = input("rentrez les nouvelles donnees :")
                 if newnbre == 1:
-                    editTableDep(tableau[nbre -1][0],tableau[nbre -1][1],tableau[nbre -1][2],new)
+                    dbh.editTableDep(tableau[nbre -1][0],tableau[nbre -1][1],tableau[nbre -1][2],new)
                 elif newnbre == 2:
-                    ediLhsDep(tableau[nbre -1][0],tableau[nbre -1][1],tableau[nbre -1][2],new):
+                    dbh.ediLhsDep(tableau[nbre -1][0],tableau[nbre -1][1],tableau[nbre -1][2],new)
                 elif newnbre == 3:
                     if new.count(" ") != 0:
                         print("error syntax")
                         edit()
                     else:
-                        editRhsDep(tableau[nbre -1][0],tableau[nbre -1][1],tableau[nbre -1][2],new):
+                        dbh.editRhsDep(tableau[nbre -1][0],tableau[nbre -1][1],tableau[nbre -1][2],new)
                 print("votre donnee a bien ete modifiee")
                 main_menu()
         except ValueError:
@@ -68,6 +73,7 @@ def delete():
     """
     option de suppression
     """
+    cls()
     tableau = getAllDep()
     if len(tableau)!= 0:
         print("la table ne contient aucun element a supprimer")
@@ -84,9 +90,10 @@ def delete():
             if nbre >= (len(tableau) -1) or nbre <= 0:
                 print("error integer")
             else:
+                cls()
                 verif = input("la suppression est definitive voulez-vous vraiment continuer?(Y/N)")
                 if verif == "Y" or verif == "y":
-                    removeDep(tableau[nbre -1][0],tableau[nbre -1][1],tableau[nbre -1][2])
+                    dbh.removeDep(tableau[nbre -1][0],tableau[nbre -1][1],tableau[nbre -1][2])
                     print("votre dependance a bien ete supprimee")
                     main_menu()
                 elif verif == "N" or verif == "n":
@@ -101,6 +108,7 @@ def analyse():
     """
     option d analyse
     """
+    cls()
     tableau = getAllDep()
     if len(tableau)!= 0:
         print("la table ne contient aucun element a analyser")
@@ -115,17 +123,18 @@ def analyse():
         a = input("numero de la ligne : ")
         nbre = float(a)
         if nbre >= (len(tableau) -1) or nbre <= 0:
-           print("error integer")
+            print("error integer")
            
            
         else:
-           print("que voulez-vous faire?")
-           print("1. determiner les cles et supercles")
-           print("2. determiner les consequences logiques")
-           print("3. determiner la cloture d un ensemble d attributs")
-           print("4. restreindre sur le schema")
-           print("5. BCNF ou 3NF")
-           nbre = input("entrez le nbre: ")
+            cls()
+            print("que voulez-vous faire?")
+            print("1. determiner les cles et supercles")
+            print("2. determiner les consequences logiques")
+            print("3. determiner la cloture d un ensemble d attributs")
+            print("4. restreindre sur le schema")
+            print("5. BCNF ou 3NF")
+            nbre = input("entrez le nbre: ")
     except ValueError:
         print("invalid syntax, try again")
 
@@ -133,7 +142,7 @@ def main_menu():
     """
     fonction menu de base du programme
     """
-    os.system("cls")
+    cls()
     print("Veuillez choisir votre fonctionnalite :")
     print("1. ajouter")
     print("2. modifier")
@@ -155,6 +164,7 @@ def main_menu():
             analyse()
         elif fonctio == 5:
             print("goodbye")
+            exit()
         else:
             print("invalid number, try again")
             main_menu()
@@ -164,7 +174,10 @@ def main_menu():
 
 def init():
     bdd=input("inserer la base de donnee:")
-    connect(bdd)
+    global dbh=DataBaseHandler(bdd)
     main_menu()
+
+def cls():
+    os.system("clear")
 
 init()
