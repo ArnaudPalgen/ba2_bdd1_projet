@@ -174,7 +174,8 @@ def main_menu():
 
 def init():
     bdd=input("inserer la base de donnee:")
-    global dbh=DataBaseHandler(bdd)
+    global dbh
+    dbh = DataBaseHandler(bdd)
     main_menu()
 
 def cls():
