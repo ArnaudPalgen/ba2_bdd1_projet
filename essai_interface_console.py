@@ -18,9 +18,19 @@ def add():
         print("error synthax")
         add()
     else:
-        dbh.insertDep(aTables, aLhs, aRhs)
-        print ("votre dependance a bien ete ajoutee")
+        dep=dbh.insertDep(aTables, aLhs, aRhs)
+        depStr=printDep(dep)
+        jr=input("\nVotre dependance a bien ete ajoutee "+ depStr)
         main_menu()
+
+def printDep(dep):
+    stre=''
+    for i in range(1,len(dep)-1):
+        stre+=dep[i]+' '
+    stre+= '--> '
+    stre+=dep[len(dep)-1]
+    return stre
+
 
 def edit():
     """

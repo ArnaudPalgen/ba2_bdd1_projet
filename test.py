@@ -10,7 +10,9 @@ cursor.execute("""CREATE TABLE IF NOT EXISTS unif(
 #	'table' TEXT NOT NULL, lhs TEXT NOT NULL, rhs TEXT NOT NULL, PRIMARY KEY('table', lhs, rhs))""")
 
 #inserer les donnees
-cursor.execute(""" INSERT INTO unif(prof, cours, heure) VALUES(?, ?, ?) """, ("arnaud", "info", 123) )
+name='arnaud'
+cours='info'
+cursor.execute(""" INSERT INTO unif(prof, cours, heure) VALUES(?, ?, ?) """, (name, cours, 123) )
 cursor.execute(""" INSERT INTO unif(prof, cours, heure) VALUES(?, ?, ?) """, ("arnaud", "math", 124) )
 cursor.execute(""" INSERT INTO unif(prof, cours, heure) VALUES(?, ?, ?) """, ("guillaume", "physique", 123) )
 cursor.execute(""" INSERT INTO unif(prof, cours, heure) VALUES(?, ?, ?) """, ("guillaume", "math2", 678) )
