@@ -3,10 +3,10 @@ import sqlite3
 class DataBaseHandler:
 	"""docstring for DataBaseHandler"""
 	def __init__(self, dataBase):
-		self.db=sqlite3.connect(bdd)
-		self.cursor=db.cursor()
+		self.db=sqlite3.connect(dataBase)
+		self.cursor=self.db.cursor()
 		self.cursor.execute("""CREATE TABLE IF NOT EXISTS FuncDep('table' TEXT NOT NULL, lhs TEXT NOT NULL, rhs TEXT NOT NULL, PRIMARY KEY('table', lhs, rhs))""")
-		db.commit()
+		self.db.commit()
 
 	def insertDep(self,table, lhs, rhs):
 		if(rhs.count(" ")==0):
