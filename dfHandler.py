@@ -59,7 +59,7 @@ class DfHandler():
 			return None
 		#TODO verifier que newData est un attribut
 		if whatModif==TABLE:
-			
+			pass
 		elif whatModif==RHS:
 			pass
 		elif whatModif==LHS:
