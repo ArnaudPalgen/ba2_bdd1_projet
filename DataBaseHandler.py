@@ -1,5 +1,4 @@
 import sqlite3
-import time
 
 class DataBaseHandler:
 	"""Gestionnaire de la base de donnees"""
@@ -13,28 +12,23 @@ class DataBaseHandler:
 		self.db.commit()
 
 	def insertDep(self,table, lhs, rhs):
-		""" Insere une DF dans la table FuncDep
+		""" 
+		Insere une DF dans la table FuncDep
 
 			Param: la table a laquelle appartient la DF: table
 					lhs, le membre de gauche de la DF
 					rhs, lemembre de droite de la DF 
 			Return: la DF inseree
 
-			Error: ValueError is rhs contient plus qu'un element
-
 		"""
-
-		if(rhs.count(" ")==0):
-			self.cursor.execute(""" INSERT INTO FuncDep('table', lhs, rhs) VALUES(?, ?, ?) """, (table, lhs, rhs) )
-			self.db.commit()
-			self.cursor.execute("""SELECT * FROM FuncDep WHERE Funcdep.'table'=? AND lhs=? AND rhs=? """, (table, lhs, rhs))
-			tab=[]
-			retour=self.cursor.fetchone()
-			for item in retour:
-				tab.append(item)
-			return tab
-		else:
-			raise ValueError("rhs ne peut contenir qu'un element")
+		self.cursor.execute(""" INSERT INTO FuncDep('table', lhs, rhs) VALUES(?, ?, ?) """, (table, lhs, rhs) )
+		self.db.commit()
+		self.cursor.execute("""SELECT * FROM FuncDep WHERE Funcdep.'table'=? AND lhs=? AND rhs=? """, (table, lhs, rhs))
+		tab=[]
+		retour=self.cursor.fetchone()
+		for item in retour:
+			tab.append(item)
+		return tab
 
 
 	def removeDep(self,table, lhs, rhs):
@@ -45,9 +39,9 @@ class DataBaseHandler:
 					lhs, le membre de gauche de la DF
 					rhs, lemembre de droite de la DF 
 
-			Error: TODO
 
 		"""
+
 		self.cursor.execute("""DELETE FROM FuncDep WHERE Funcdep.'table'=?, lhs=?, rhs=?""", (table, lhs, rhs) )
 		self.db.commit()
 
@@ -62,7 +56,6 @@ class DataBaseHandler:
 					newTable, le nom de la nouvelle table 
 			Return: la DF modifiee TODO
 
-			Error: TODO
 
 		"""
 		self.cursor.execute(""" UPDATE FuncDep SET Funcdep.'table'=? where Funcdep.'table'=? AND lhs=? AND rhs=?""", (newTable, table, lhs, rhs))
@@ -78,7 +71,6 @@ class DataBaseHandler:
 					newLhs, le nom de la nouvelle partie de gauche de la DF 
 			Return: la DF modifiee TODO
 
-			Error: TODO
 
 		"""
 		self.cursor.execute(""" UPDATE FuncDep SET lhs=? where Funcdep.'table'=? AND lhs=? AND rhs=?""", (newLhs, table, lhs, rhs))
@@ -94,7 +86,6 @@ class DataBaseHandler:
 					newRhs, le nom de la nouvelle partie de droite de la DF 
 			Return: la DF modifiee TODO
 
-			Error: TODO
 
 		"""
 		self.cursor.execute(""" UPDATE FuncDep SET rhs=? where Funcdep.'table'=? AND lhs=? AND rhs=?""", (newRhs, table, lhs, rhs))
@@ -105,7 +96,6 @@ class DataBaseHandler:
 		Retourne le nom de toutes les tables de la base de donnees 
 
 			Return: Un tableau contenant les noms de toutes les tables de la base de donee
-			Error: TODO
 		"""
 		self.cursor.execute("""SELECT name FROM sqlite_master WHERE type='table' """)
 		retour=[]
@@ -119,7 +109,6 @@ class DataBaseHandler:
 
 			Param: tableName le nom de la table
 			Return: Un tableau contenant le noms des attributs de la table TableName
-			Error: TODO
 
 		"""
 		retour=[]
@@ -128,12 +117,20 @@ class DataBaseHandler:
 			retour.append(rows[1])
 		return retour
 
-	#def getDep(self, table, lhs, rhs):
-	#	self.cursor.execute("""SELECT * FROM FuncDep WHERE 'table'=? AND lhs=? AND rhs=? """, (table, lhs, rhs))
-	#	retour=[]
-	#	for item in self.cursor.fetchone():
-	#		retour.append(item)
-	#	return retour
+	def getOneDep(self, table, lhs, rhs):
+		"""
+		Retourne une DF si elle existe. Si non retourne un tableau vide
+
+			Param: la table a laquelle appartient la DF: table
+					lhs, le membre de gauche de la DF
+					rhs, lemembre de droite de la DF
+			Return: un tableau contenant la DF. Si elle n'existe pas, le tableau est vide
+		"""
+		self.cursor.execute("""SELECT * FROM FuncDep WHERE FuncDep.'table'=? AND lhs=? AND rhs=? """, (table, lhs, rhs))
+		retour=[]
+		for item in self.cursor.fetchone():
+			retour.append(item)
+		return retour
 
 	def getDepByRelation(self,relation):
 		""" 
@@ -141,7 +138,6 @@ class DataBaseHandler:
 
 			Param: relation un nom d'une table de la base de donnee ??diff de funcDep ????
 			Return: un tableau contenant toutes les DFs associees a la table relation
-			Error: TODO
 
 		"""
 		self.cursor.execute(""" SELECT lhs, rhs FROM FuncDep WHERE FuncDep.'table'=?  """, relation)
@@ -161,7 +157,6 @@ class DataBaseHandler:
 		Retourne toutes les DF de la table FuncDep
 
 			Return: Un tableau a deux dimensions ou chaque ligne est une DF
-			Error: TODO
 
 		"""
 		retour=[]
