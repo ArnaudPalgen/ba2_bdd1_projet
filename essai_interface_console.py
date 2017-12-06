@@ -14,11 +14,11 @@ def add():
     aLhs = input("partie gauche de la dependance fonctionnelle : ")
     aRhs = input("partie droite de la dependance fonctionnelle : ")
 
-    if aRhs.count(" ") != 0:
-        print("error synthax")
-        add()
-    else:
+    if:
         dep=dbh.insertDep(aTables, aLhs, aRhs)
+        if dep = None:
+            print("votre dependance n a pas pu etre ajoutee. Sorry ")
+
         depStr=printDep(dep)
         jr=input("\nVotre dependance a bien ete ajoutee "+ depStr)
         main_menu()
