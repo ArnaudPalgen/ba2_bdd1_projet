@@ -1,6 +1,9 @@
 from DataBaseHandler import DataBaseHandler
 class DfHandler():
 	"""docstring for DfHandler"""
+	TABLE='table'
+	LHS='lhs'
+	RHS='rhs'
 	def __init__(self, dataBase):
 		self.dbh=DataBaseHandler(dataBase)
 
@@ -35,12 +38,34 @@ class DfHandler():
 			return False
 
 		return True
+	def depExist(self, table, lhs, rhs):
+		return isDep(table, lhs, rhs) and self.dbh.getOneDep(table, lhs, rhs)==1
 
-	def insertDep(self, table, rhs, lhs):
+	def removeDep(self, table, lhs, rhs):
 		if isDep(table, lhs, rhs):
-			if(len (self.dbh.getOneDep(table, lhs, rhs))==1):
-				return self.dbh.insertDep(table, lhs, rhs)
-		return None
+			self.dbh.removeDep(table, lhs, rhs)
+			return 
+		else:
+			return True
+		
+
+	def insertDep(self, table, lhs, rhs):
+		if depExist(table, lhs, rhs):
+			return self.dbh.insertDep(table, lhs, rhs)
+		else:
+			return None
+	def editDep(self, table, lhs, rhs, newData,whatModif):
+		if  not depExist(table, lhs, rhs):
+			return None
+		#TODO verifier que newData est un attribut
+		if whatModif==TABLE:
+			
+		elif whatModif==RHS:
+			pass
+		elif whatModif==LHS:
+			pass
+		else:
+			return None
 
 	def isBcnf(self, table, lhs, rhs):
 		pass
