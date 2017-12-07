@@ -17,7 +17,7 @@ def add():
 
     
     dep=dbh.insertDep(aTables, aLhs, aRhs)
-    if dep == None:
+    if dep == False:
         print("votre dependance n a pas pu etre ajoutee. Sorry :( ")
         main_menu()
 
@@ -48,7 +48,7 @@ def edit():
 
     cls()
 
-    tableau = getAllDep()#ajout de getAllDep à dfHandler
+    tableau = getAllDep()
 
     if len(tableau)== 0:
         print("la table ne contient aucun element a modifier")
@@ -78,14 +78,14 @@ def edit():
                 new = input("rentrez les nouvelles donnees :")
 
                 if newnbre == 1: 
-                    dbh.editTableDep(tableau[nbre -1][0],tableau[nbre -1][1],tableau[nbre -1][2],new)#ajout de editTableDep à dfHandler
+                    dbh.editDep(tableau[nbre -1][0],tableau[nbre -1][1],tableau[nbre -1][2],new, TABLE)
 
                     print("votre donnee a bien ete modifiee")
                     t=input("la nouvelle dependance est :"+ new + tableau[nbre -1][1] + "-->" + tableau[nbre -1][2])
                     main_menu()
                     
                 elif newnbre == 2:
-                    dbh.editLhsDep(tableau[nbre -1][0],tableau[nbre -1][1],tableau[nbre -1][2],new)#ajout de editLhsDep à dfHandler
+                    dbh.editDep(tableau[nbre -1][0],tableau[nbre -1][1],tableau[nbre -1][2],new, LHS)
 
                     print("votre donnee a bien ete modifiee")
                     l=input("la nouvelle dependance est :"+ tableau[nbre -1][0] + new + "-->" + tableau[nbre -1][2])
@@ -96,7 +96,7 @@ def edit():
                         print("error syntax")
                         edit()
                     else:
-                        dbh.editRhsDep(tableau[nbre -1][0],tableau[nbre -1][1],tableau[nbre -1][2],new)#ajout de editRhsDep à dfHandler
+                        dbh.editDep(tableau[nbre -1][0],tableau[nbre -1][1],tableau[nbre -1][2],new, RHS)
 
                         print("votre donnee a bien ete modifiee")
                         r=input("la nouvelle dependance est :"+ tableau[nbre -1][0] + tableau[nbre -1][1] + "-->" + new)
@@ -118,7 +118,7 @@ def delete():
 
     cls()
 
-    tableau = getAllDep() #ajout de getAllDep à dfHandler
+    tableau = getAllDep() 
     if len(tableau)== 0:
         print("la table ne contient aucun element a supprimer")
     else:
@@ -140,9 +140,9 @@ def delete():
 
                 verif = input("la suppression est definitive voulez-vous vraiment continuer?(Y/N)")
                 if verif == "Y" or verif == "y":
-                    dbh.removeDep(tableau[nbre -1][0],tableau[nbre -1][1],tableau[nbre -1][2])#ajout removeDep() a dfDep
-                    d=input("la dependance "+ tableau[nbre -1][1]+"-->"+tableau[nbre -1][2]+" venant de la table "+tableau[nbre -1][0]+" a bien ete supprimee")
-                    main_menu()
+                    if dbh.removeDep(tableau[nbre -1][0],tableau[nbre -1][1],tableau[nbre -1][2]):
+                        d=input("la dependance "+ tableau[nbre -1][1]+"-->"+tableau[nbre -1][2]+" venant de la table "+tableau[nbre -1][0]+" a bien ete supprimee")
+                        main_menu()
                 elif verif == "N" or verif == "n":
                     main_menu()
                 else:
@@ -214,7 +214,7 @@ def analyse():
 
                 else:
                     if isBcnf:
-                        b = print("votre schema est en BCNF")
+                        b = input("votre schema est en BCNF")
                         main_menu()
 
                     else:
