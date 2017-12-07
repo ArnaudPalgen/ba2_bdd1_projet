@@ -39,20 +39,12 @@ class DfHandler():
 			return False
 
 		return True
-	
-<<<<<<< HEAD
-	def __depExist(self, table, lhs, rhs):
+		
+def __depExist(self, table, lhs, rhs):
 		return self.isDep(table, lhs, rhs) and len(self.dbh.getOneDep(table, lhs, rhs)) == 1
 
 	def removeDep(self, table, lhs, rhs):
 		if self.depExist(table, lhs, rhs):
-=======
-	def depExist(self, table, lhs, rhs):
-		return self.isDep(table, lhs, rhs) and self.dbh.getOneDep(table, lhs, rhs) == 1
-
-	def removeDep(self, table, lhs, rhs):
-		if self.isDep(table, lhs, rhs):
->>>>>>> 8f1f846a376cc0ceb2473b4c6db5ce66fc424332
 			self.dbh.removeDep(table, lhs, rhs)
 			return True	
 		else:
@@ -63,8 +55,6 @@ class DfHandler():
 		return self.dbh.getAllDep()
 
 	def insertDep(self, table, lhs, rhs):
-<<<<<<< HEAD
-
 		if self.depExist(table, lhs, rhs): #depExist ne retourne pas True ou False donc bug
 			r=self.dbh.insertDep(table, lhs, rhs)
 			if r != None:#TODO verifier que r contient quelque chose
@@ -72,12 +62,9 @@ class DfHandler():
 			else:
 				return False
 
-=======
-		if self.depExist(table, lhs, rhs): #depExist ne retourne pas True ou False donc bug
-			return self.dbh.insertDep(table, lhs, rhs)
->>>>>>> 8f1f846a376cc0ceb2473b4c6db5ce66fc424332
 		else:
 			return False
+
 	def editDep(self, table, lhs, rhs, newData,whatModif):
 		#TODO retourner la nouvelle df
 		if not self.depExist(table, lhs, rhs):#on verifie que la df existe deja

@@ -175,3 +175,7 @@ class DataBaseHandler:
 			retour.apppend(l)
 
 		return retour
+	def DFisOk(self, table, lhs, rhs):
+		self.cursor.execute("""SELECT * """)
+		#self.cursor.execute(""" SELECT e.'table' AS tbl1, e.lhs, e.rhs, f.'table' AS tbl2, f.lhs, f.rhs AS rhse FROM FuncDep e, FuncDep f WHERE tbl1== tbl2
+		#	AND tbl1=? AND lhs=? AND rhs<>rhse """, (table,))
