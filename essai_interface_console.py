@@ -253,7 +253,7 @@ def main_menu():
     print("3. supprimer une dependance")
     print("4. analyser d une dependance")
     print("5. changer de base de donnee")
-    print("5. quitter l'application")
+    print("6. quitter l'application")
 
     try:
         a = input("entrez le nombre : ")
@@ -268,6 +268,7 @@ def main_menu():
         elif fonctio == 4:
             analyse()
         elif fonctio == 5:
+            cls()
             init()
         elif fonctio == 6:
             print("###############################################")
@@ -295,15 +296,7 @@ def init():
 
     """ fonction pour l insertion de la base de donnee"""
     
-    print("##################################")
-    print("##################################")
-    print("#    #  #####  #      #      #####")
-    print("#    #  #      #      #      #   #")
-    print("######  #####  #      #      #   #")
-    print("#    #  #      #      #      #   #")
-    print("#    #  #####  #####  #####  #####")
-    print("##################################")
-    print("##################################")
+    
     bdd=input("inserer la base de donnee:")
     global dbh
     dbh = DfHandler(bdd)
@@ -319,4 +312,14 @@ def cls():
     
     os.system("clear")
 
+
+print("##################################")
+print("##################################")
+print("#    #  #####  #      #      #####")
+print("#    #  #      #      #      #   #")
+print("######  #####  #      #      #   #")
+print("#    #  #      #      #      #   #")
+print("#    #  #####  #####  #####  #####")
+print("##################################")
+print("##################################")
 init()

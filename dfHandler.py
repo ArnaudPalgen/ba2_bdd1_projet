@@ -38,8 +38,9 @@ class DfHandler():
 			return False
 
 		return True
+	
 	def depExist(self, table, lhs, rhs):
-		return isDep(table, lhs, rhs) and self.dbh.getOneDep(table, lhs, rhs)==1
+		return isDep(table, lhs, rhs) and self.dbh.getOneDep(table, lhs, rhs) == 1
 
 	def removeDep(self, table, lhs, rhs):
 		if isDep(table, lhs, rhs):
@@ -50,7 +51,7 @@ class DfHandler():
 		
 
 	def insertDep(self, table, lhs, rhs):
-		if depExist(table, lhs, rhs):
+		if depExist(table, lhs, rhs): #depExist ne retourne pas True ou False donc bug
 			return self.dbh.insertDep(table, lhs, rhs)
 		else:
 			return None
