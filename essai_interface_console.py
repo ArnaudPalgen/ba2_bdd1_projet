@@ -1,5 +1,5 @@
-from DataBaseHandler import *
 from dfHandler import *
+from DataBaseHandler import *
 import os
 
 dbh = None
@@ -310,7 +310,8 @@ def cls():
     
     """ fonction de clean d ecran """
     
-    os.system("clear")
+    os.system('cls' if os.name =='nt' else 'clear')
+    
 
 
 print("##################################")
