@@ -17,6 +17,7 @@ cursor.execute(""" INSERT INTO unif(prof, cours, heure) VALUES(?, ?, ?) """, ("a
 cursor.execute(""" INSERT INTO unif(prof, cours, heure) VALUES(?, ?, ?) """, ("guillaume", "physique", 123) )
 cursor.execute(""" INSERT INTO unif(prof, cours, heure) VALUES(?, ?, ?) """, ("guillaume", "math2", 678) )
 cursor.execute(""" INSERT INTO unif(prof, cours, heure) VALUES(?, ?, ?) """, ("jean", "francais", 999) )
+cursor.execute(""" INSERT INTO unif(prof, cours, heure) VALUES(?, ?, ?) """, ("jean", "anglais", 988) )
 
 db.commit()
 
@@ -49,8 +50,11 @@ print("-------------------------------------------------------------------------
 #s=s[0:len(s)-2]
 #s+=""" """
 #s+=""" rhs1.tableName From unif z, unif t WHERE"""
-for item in cursor:
-	print(item)
+#for item in cursor:
+#	print(item)
+cursor.execute(""" SELECT t1.*, t2.cours AS cours2 FROM unif t1, unif t2 WHERE t1.prof == t2.prof AND t1.cours != cours2""")
+for rows in cursor:
+	print(rows)
 print("-------------------------------------------------------------------------------------------")
 cursor.execute("""PRAGMA table_info(unif)""");
 for rows in cursor:

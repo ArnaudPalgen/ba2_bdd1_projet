@@ -9,7 +9,7 @@ class DfHandler():
 		self.dbh=DataBaseHandler(dataBase)
 
 
-	def __isDep(self,table, lhs, rhs):
+	def isDep(self,table, lhs, rhs):
 		"""
 		Parametres: lhs et rhs str nettoyés !!
 		Return True si la table existe, lhs et rhs sont des attributs de la table
@@ -40,7 +40,7 @@ class DfHandler():
 
 		return True
 		
-def __depExist(self, table, lhs, rhs):
+	def depExist(self, table, lhs, rhs):
 		return self.isDep(table, lhs, rhs) and len(self.dbh.getOneDep(table, lhs, rhs)) == 1
 
 	def removeDep(self, table, lhs, rhs):
@@ -90,8 +90,14 @@ def __depExist(self, table, lhs, rhs):
 		else:
 			return False
 
-	def isBcnf(self, table, lhs, rhs):
-		pass
+	def isBcnf(self, table):
+		"""
+		je selectionne tous les lhs je les split en un tableau 
+		il faut qu'une df lhs --> a avec a in table existe et a notIn lhs
+		"""
+		allLhs=self.dbh.getAllLhs(table)
+
+
 	def is3nf(self, table, lhs, rhs):
 		pass
 	def getCle(self):
@@ -103,8 +109,11 @@ def __depExist(self, table, lhs, rhs):
 	def getDecompositionBcnf(self):
 		pass
 	def satisfaitDF(self, table, lhs, rhs):
+		if depExist(table, lhs, rhs):
+			return self.dbh.DFisOk(table, lhs, rhs)
+		else:
+			return None
 		
-		pass
 	def getInutileDF(self):
 		pass
 	
@@ -113,7 +122,7 @@ def __depExist(self, table, lhs, rhs):
 		result=self.doFermeture(ens,lhs)
 		return rhs in result
 
-	def __doFermeture(dFs, x):
+	def doFermeture(dFs, x):
 		"""
 		
 		"""
@@ -126,7 +135,7 @@ def __depExist(self, table, lhs, rhs):
 				fermeture.append(z)
 		return fermeture
 
-	def __isIn(small, big):
+	def isIn(small, big):
 		"""
 		Return True if small is in big else return False
 		"""

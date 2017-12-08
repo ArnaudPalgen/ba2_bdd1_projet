@@ -175,7 +175,31 @@ class DataBaseHandler:
 			retour.apppend(l)
 
 		return retour
-	def DFisOk(self, table, lhs, rhs):
-		self.cursor.execute("""SELECT * """)
-		#self.cursor.execute(""" SELECT e.'table' AS tbl1, e.lhs, e.rhs, f.'table' AS tbl2, f.lhs, f.rhs AS rhse FROM FuncDep e, FuncDep f WHERE tbl1== tbl2
-		#	AND tbl1=? AND lhs=? AND rhs<>rhse """, (table,))
+	def DFisOk(self,table, lhs, rhs):
+		"""
+		retoune les tuples de la table table qui ne respectent pas la df lhs--> rhs
+		"""
+
+		s="SELECT t1.*, t2."+rhs+" FROM "+table+" t1, "+table+" t2 WHERE "
+		for attribute in lhs:
+			s+="t1."+attribute+" == t2."+attribute+" AND "
+		s+="t1."+rhs+" != t2."+rhs
+
+		self.cursor.execute(s)
+
+		retour=[]
+		for tuples in cursor:
+			line=[]
+			for item in tuples:
+				line.append(item)
+			line.pop()
+			retour.append(line)
+		return retour
+
+	def getAllLhs(self, table):
+		"""
+		retourne tous les lhs pour une table
+		"""
+
+		self.cursor.execute(""" SELECT lhs FROM FuncDep WHERE FuncDep.'table' == ? """ (table,))
+		
