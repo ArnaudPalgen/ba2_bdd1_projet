@@ -1,5 +1,7 @@
 from DataBaseHandler import DataBaseHandler
 #TODO mettre un s a exist
+#TODO verifier idDep et depExist
+#TODO isLogicConsequence mauvais
 class DfHandler():
 	"""docstring for DfHandler"""
 	TABLE='table'
@@ -41,7 +43,8 @@ class DfHandler():
 		return True
 		
 	def depExist(self, table, lhs, rhs):
-		return self.isDep(table, lhs, rhs) and len(self.dbh.getOneDep(table, lhs, rhs)) == 1
+		r=self.dbh.getOneDep(table, lhs, rhs)
+		return self.isDep(table, lhs, rhs) and r != None and len(r) == 1
 
 	def removeDep(self, table, lhs, rhs):
 		if self.depExist(table, lhs, rhs):
@@ -55,7 +58,7 @@ class DfHandler():
 		return self.dbh.getAllDep()
 
 	def insertDep(self, table, lhs, rhs):
-		if self.depExist(table, lhs, rhs): #depExist ne retourne pas True ou False donc bug
+		if self.isDep(table, lhs, rhs): #depExist ne retourne pas True ou False donc bug
 			r=self.dbh.insertDep(table, lhs, rhs)
 			if r != None:#TODO verifier que r contient quelque chose
 				return True

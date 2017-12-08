@@ -128,9 +128,13 @@ class DataBaseHandler:
 		"""
 		self.cursor.execute("""SELECT * FROM FuncDep WHERE FuncDep.'table'=? AND lhs=? AND rhs=? """, (table, lhs, rhs))
 		retour=[]
-		for item in self.cursor.fetchone():
-			retour.append(item)
-		return retour
+		result = self.cursor.fetchone()
+		if result==None:
+			return None
+		else:
+			for item in result:
+				retour.append(item)
+			return retour
 
 	def getDepByRelation(self,relation):
 		""" 
@@ -170,9 +174,9 @@ class DataBaseHandler:
 
 		for items in self.cursor:
 			l=[]
-			for element in item:
+			for element in items:
 				l.append(element)
-			retour.apppend(l)
+			retour.append(l)
 
 		return retour
 	def DFisOk(self,table, lhs, rhs):
