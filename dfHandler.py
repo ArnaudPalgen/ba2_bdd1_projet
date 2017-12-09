@@ -1,8 +1,7 @@
 from DataBaseHandler import DataBaseHandler
 import logging
 #TODO mettre un s a exist
-#TODO isLogicConsequence mauvais
-
+#TODO demander consequence logique. tout sauf celle donee ?
 logging.basicConfig(filename='logs/log1.log',level=logging.DEBUG,\
       format='%(asctime)s -- %(name)s -- %(levelname)s -- %(message)s')
 class DfHandler():
@@ -67,7 +66,7 @@ class DfHandler():
 		return self.dbh.getAllDep()
 
 	def insertDep(self, table, lhs, rhs):
-		if self.__isDep(table, lhs, rhs): #__depExist ne retourne pas True ou False donc bug
+		if self.__isDep(table, lhs, rhs) and not self.__depExist(table, lhs, rhs):
 			r=self.dbh.insertDep(table, lhs, rhs)
 			if r != None:#TODO verifier que r contient quelque chose
 				return True
@@ -126,7 +125,11 @@ class DfHandler():
 			lhsTab=lhs[0].split()
 			for attribute in allAttributs:
 				if attribute not in lhsTab:
+<<<<<<< HEAD
 					if not self.isLogicConsequence(table, lhs, attribute):
+=======
+					if not self.	isLogicConsequence(table, lhs, attribute):
+>>>>>>> 8a934e21a4907494261593573908719720bb4303
 						return False
 		return True
 
@@ -138,7 +141,7 @@ class DfHandler():
 
 	def is3nf(self, table, lhs, rhs):
 		pass
-	def getCle(self):
+	def getCle(self, table):
 		pass
 	def getSuperCle(self):
 		pass
@@ -155,23 +158,31 @@ class DfHandler():
 	def getInutileDF(self):
 		pass
 	
+<<<<<<< HEAD
 	def isLogicConsequence(this,table, lhs, rhs):
+=======
+	def isLogicConsequence(self,table, lhs, rhs):
+>>>>>>> 8a934e21a4907494261593573908719720bb4303
 		if self.__depExist(table,lhs,rhs):
 			ens=self.dbh.getDepByRelation(table)
 			ens.remove([table,lhs,rhs])
 			result=self.__doFermeture(ens,lhs.split())
+<<<<<<< HEAD
+=======
+			print(result)
+>>>>>>> 8a934e21a4907494261593573908719720bb4303
 			return rhs in result
 		else:
 			return None
 
-	def __doFermeture(dFs, x):
+	def __doFermeture(self, dFs, x):
 		"""
 		retourne la fermeture de l'ensemble x d'attribut par rapport a un ensemble dfs de DFs
 		"""
 		reste=dFs#ensemble de tuple ( DF )
 		fermeture=x #ensemble d'attributs
 		for couple in reste:
-			#w,z=couple
+
 			w=couple[1]
 			z=couple[2]
 			if self.__isIn(w.split(),fermeture):
@@ -179,7 +190,7 @@ class DfHandler():
 				fermeture.append(z)
 		return fermeture
 
-	def __isIn(small, big):
+	def __isIn(self,small, big):
 		"""
 		Return True if small is in big else return False
 		"""
@@ -188,7 +199,6 @@ class DfHandler():
 			for bItem in big:
 				if sItem==bItem:
 					sItemIsInBig=True
-					break
 			if sItemIsInBig==False:
 				return False
 		return True
