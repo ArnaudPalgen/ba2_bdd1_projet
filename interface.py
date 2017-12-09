@@ -268,11 +268,11 @@ def analyse():
                         bcnf = input("votre schema est en BCNF")
                         main_menu()
                     else:
-                        not_bcnf = input("votre schema est en 3nf mais n est pas en BCNF voulez vous faire une decomposition en BCNF? Y/N")
-                        if verif == "Y" or verif == "y":
+                        not_bcnf = input("votre schema est en 3nf mais n est pas en BCNF voulez vous faire une decomposition en BCNF? (Y/N) :")
+                        if not_bcnf == "Y" or not_bcnf == "y":
                             decomp_bcnf = input("la decomposition en BCNF serait : "+ getDecompositionBcnf())
                             main_menu()
-                        elif verif == "N" or verif == "n":
+                        elif not_bcnf == "N" or not_bcnf == "n":
                             analyse()
                         else:
                             error_synth=input("erreur synthaxe")
