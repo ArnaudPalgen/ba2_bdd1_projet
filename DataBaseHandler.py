@@ -144,7 +144,7 @@ class DataBaseHandler:
 			Return: un tableau contenant toutes les DFs associees a la table relation
 
 		"""
-		self.cursor.execute(""" SELECT lhs, rhs FROM FuncDep WHERE FuncDep.'table'=?  """, relation)
+		self.cursor.execute("""SELECT * FROM FuncDep WHERE FuncDep.'table'=?  """, (relation,))	
 		retour=[]
 		for tuples in self.cursor:
 			l=[]
@@ -205,7 +205,7 @@ class DataBaseHandler:
 		retourne tous les lhs pour une table donnee
 		"""
 
-		self.cursor.execute(""" SELECT lhs FROM FuncDep WHERE FuncDep.'table' == ? """ (table,))
+		self.cursor.execute(""" SELECT lhs FROM FuncDep WHERE FuncDep.'table' == ? """ ,(table,))
 		retour=[]
 
 		for item in self.cursor:
