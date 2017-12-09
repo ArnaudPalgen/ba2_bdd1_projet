@@ -95,7 +95,8 @@ def edit():
                         print("error syntax")
                         edit()
                     else:
-                        dbh.editDep(tableau[nbre -1][0],tableau[nbre -1][1],tableau[nbre -1][2],new, dbh.RHS)
+                        retour=dbh.editDep(tableau[nbre -1][0],tableau[nbre -1][1],tableau[nbre -1][2],new, dbh.RHS)
+                        print("RETOUR "+str(retour))
 
                         print("votre donnee a bien ete modifiee")
                         r=input("la nouvelle dependance est :"+ tableau[nbre -1][0] +" "+ tableau[nbre -1][1] + "-->" + new)
