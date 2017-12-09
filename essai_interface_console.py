@@ -63,7 +63,8 @@ def edit():
             a = input("numero de la ligne : ")
             nbre = int(a)
             if nbre > (len(tableau)) or nbre <= 0:
-                print("error integer")
+                e=input("error integer")
+                edit()
             else:
                 cls()
 
@@ -77,30 +78,43 @@ def edit():
                 new = input("rentrez les nouvelles donnees :")
 
                 if newnbre == 1: 
-                    dbh.editDep(tableau[nbre -1][0],tableau[nbre -1][1],tableau[nbre -1][2],new, dbh.TABLE)
+                    retour=dbh.editDep(tableau[nbre -1][0],tableau[nbre -1][1],tableau[nbre -1][2],new, dbh.TABLE)
+                    print("RETOUR "+str(retour))
+                    if retour:
 
-                    print("votre donnee a bien ete modifiee")
-                    t=input("la nouvelle dependance est :"+ new +" "+ tableau[nbre -1][1] + "-->" + tableau[nbre -1][2])
-                    main_menu()
-                    
+                    	print("votre donnee a bien ete modifiee")
+                    	t=input("la nouvelle dependance est :"+ new +" "+ tableau[nbre -1][1] + "-->" + tableau[nbre -1][2])
+                    	main_menu()
+                    else:
+                        	print("une erreur est apparue lors de la modification de votre dependance")
+
                 elif newnbre == 2:
-                    dbh.editDep(tableau[nbre -1][0],tableau[nbre -1][1],tableau[nbre -1][2],new, dbh.LHS)
+                    retour=dbh.editDep(tableau[nbre -1][0],tableau[nbre -1][1],tableau[nbre -1][2],new, dbh.LHS)
+                    print("RETOUR "+str(retour))
+                    if retour:
+                    	print("votre donnee a bien ete modifiee")
+                    	l=input("la nouvelle dependance est :"+ tableau[nbre -1][0] +" "+ new + "-->" + tableau[nbre -1][2])
+                    	main_menu()
+                    else:
+                        	print("une erreur est apparue lors de la modification de votre dependance")
 
-                    print("votre donnee a bien ete modifiee")
-                    l=input("la nouvelle dependance est :"+ tableau[nbre -1][0] +" "+ new + "-->" + tableau[nbre -1][2])
-                    main_menu()
-                    
                 elif newnbre == 3:
                     if new.count(" ") != 0:
                         print("error syntax")
                         edit()
                     else:
                         retour=dbh.editDep(tableau[nbre -1][0],tableau[nbre -1][1],tableau[nbre -1][2],new, dbh.RHS)
-                        print("RETOUR "+str(retour))
+                        
+                        if retour:
+                       		print("votre donnee a bien ete modifiee")
+                        	r=input("la nouvelle dependance est :"+ tableau[nbre -1][0] +" "+ tableau[nbre -1][1] + "-->" + new)
+                        	main_menu()
+                        else:
+                        	print("une erreur est apparue lors de la modification de votre dependance")
 
-                        print("votre donnee a bien ete modifiee")
-                        r=input("la nouvelle dependance est :"+ tableau[nbre -1][0] +" "+ tableau[nbre -1][1] + "-->" + new)
-                        main_menu()
+                else:
+                	r=input("error integer")
+                	edit()
                 
                 
 
@@ -120,12 +134,14 @@ def delete():
 
     tableau = dbh.getAllDep() 
     if len(tableau)== 0:
-        print("la table ne contient aucun element a supprimer")
+        d=input("la table ne contient aucun element a supprimer")
+        main_menu()
+
     else:
         print("quelle ligne voulez-vous supprimer?")
         increment = 1
         for line in tableau:
-            print(str(increment)+".  Table: "+line[0]+" dependance fonctionnelle :"+line[1]+" --> "+line[2])
+            print(str(increment)+".  Table: "+line[0]+"  dependance fonctionnelle :"+line[1]+" --> "+line[2])
             increment += 1
 
         try: 
@@ -144,7 +160,7 @@ def delete():
                         d=input("la dependance "+ tableau[nbre -1][1]+"-->"+tableau[nbre -1][2]+" venant de la table "+tableau[nbre -1][0]+" a bien ete supprimee")
                         main_menu()
                     else:
-                        print("une erreur c est produite pendant l operation")    
+                        print("une erreur c est produite pendant l'operation")    
                 elif verif == "N" or verif == "n":
                     main_menu()
                 else:
@@ -165,7 +181,7 @@ def analyse():
     cls()
     tableau = dbh.getAllDep() #ajout de getAllDep à dfHandler
     if len(tableau)== 0:
-        print("la table ne contient aucun element a analyser")
+        z=input("la table ne contient aucun element a analyser")
         main_menu()
     else:
         try:
@@ -190,14 +206,58 @@ def analyse():
                     print("le nombre est inconnu")
                     analyse()
 
+
+
+
+
+
+
+
+
             elif opti == 2:
-                for i in tableau:
-                    print(dbh.isLogicConsequence(line[i-1][0],line[i-1][1],line[i-1][2])) # a verifier
-                    main_menu()
+
+            	increment =1
+            	for line in tableau:
+            		print(str(increment)+".  Table: "+line[0]+" dependance fonctionnelle :"+line[1]+" --> "+line[2])
+            		increment +=1
+            	try:
+            		a= input("numero de la dependance a analyser")
+            		nbre = int(a)
+
+            		if nbre > (len(tableau)) or nbre <= 0:
+						print("error integer")
+					else:
+						if dbh.isLogicConsequence(tableau[nbre -1][0],tableau[nbre -1][1],tableau[nbre -1][2]):
+							g = input("votre dependance est bien une consequence logique")
+							analyse()
+						else:
+							h = input("votre dependance n'est pas une consequence logique")
+        					analyse()
+        		except ValueError:
+        			print("invalid syntax, try again")
+
+
+
+
+
+
+
+
+
 
             elif opti == 3:
                 pass
-            
+
+
+
+
+
+
+
+
+
+
+
             elif opti == 4:
                 #methode a revoir (argument faux)
                 if is3nf == False:
@@ -228,6 +288,19 @@ def analyse():
                             print("erreur synthaxe")
                             analyse()
 
+
+
+
+
+
+
+
+
+
+
+
+
+
             elif opti == 5:
                 main_menu()
 
@@ -251,9 +324,10 @@ def main_menu():
     print("1. ajouter une dependance")
     print("2. modifier une dependance")
     print("3. supprimer une dependance")
-    print("4. analyser d une dependance")
+    print("4. analyser des dependances")
     print("5. changer de base de donnee")
-    print("6. quitter l'application")
+    print("6. visionner vos dependances fonctionnelles")
+    print("7. quitter l'application")
 
     try:
         a = input("entrez le nombre : ")
@@ -271,6 +345,20 @@ def main_menu():
             cls()
             init()
         elif fonctio == 6:
+        	cls()
+        	tableau = dbh.getAllDep()
+        	if len(tableau) == 0:
+        		d.input("vous n'avez pas encore de dependances fonctionnelles")
+        		main_menu()
+
+        	else:
+        		increment = 1
+        		for line in tableau:
+        			print(str(increment)+".  Table: "+line[0]+"  dependance fonctionnelle : "+line[1]+"-->"+line[2])
+        			increment += 1
+        			defp=input("retour au menu principal")
+        			main_menu()
+        elif fonctio == 7:
             print("###############################################")
             print("###############################################")
             print("##### #####  #####  ####   ####   #    #  #####")
@@ -279,7 +367,7 @@ def main_menu():
             print("#  #  #   #  #   #  #   #  #   #    ##    #    ")
             print("####  #####  #####  ####   ####     ##    #####")
             print("###############################################")
-            z = input("###############################################")
+            print("###############################################")
             exit()
         else:
             print("invalid number, try again")
