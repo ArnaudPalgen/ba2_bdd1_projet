@@ -18,24 +18,11 @@ def add():
     
     dep=dbh.insertDep(aTables, aLhs, aRhs)
     if dep == False:
-        b=input("votre dependance n a pas pu etre ajoutee. Sorry :( ")
+        b=input("votre dependance n'a pas pu etre ajoutee. Sorry :( ")
         main_menu()
 
     jr=input("Votre dependance a bien ete ajoutee : "+ aLhs + "-->" +aRhs)
     main_menu()
-
-
-
-
-
-#def printDep(dep):
-#   stre=''
-#   for i in range(1,len(dep)-1):
-#       stre+=dep[i]+' '
-#   stre+= '--> '
-#   stre+=dep[len(dep)-1]
-#   return stre
-
 
 
 
@@ -56,7 +43,7 @@ def edit():
         print("quelle ligne voulez-vous modifier?")
         increment = 1
         for line in tableau:
-            print(str(increment)+".  Table: "+line[0]+"  dependance fonctionelle: "+line[1]+" --> "+line[2])
+            print(str(increment)+".  Table: "+line[0]+"  dependance fonctionnelle: "+line[1]+" --> "+line[2])
             increment  += 1
         
         try:
@@ -79,24 +66,24 @@ def edit():
 
                 if newnbre == 1: 
                     retour=dbh.editDep(tableau[nbre -1][0],tableau[nbre -1][1],tableau[nbre -1][2],new, dbh.TABLE)
-                    print("RETOUR "+str(retour))
                     if retour:
 
                     	print("votre donnee a bien ete modifiee")
                     	t=input("la nouvelle dependance est :"+ new +" "+ tableau[nbre -1][1] + "-->" + tableau[nbre -1][2])
                     	main_menu()
                     else:
-                        	print("une erreur est apparue lors de la modification de votre dependance")
+                        	x=input("une erreur est apparue lors de la modification de votre dependance")
+                        	main_menu()
 
                 elif newnbre == 2:
                     retour=dbh.editDep(tableau[nbre -1][0],tableau[nbre -1][1],tableau[nbre -1][2],new, dbh.LHS)
-                    print("RETOUR "+str(retour))
                     if retour:
                     	print("votre donnee a bien ete modifiee")
                     	l=input("la nouvelle dependance est :"+ tableau[nbre -1][0] +" "+ new + "-->" + tableau[nbre -1][2])
                     	main_menu()
                     else:
-                        	print("une erreur est apparue lors de la modification de votre dependance")
+                        	x=input("une erreur est apparue lors de la modification de votre dependance")
+                        	main_menu()
 
                 elif newnbre == 3:
                     if new.count(" ") != 0:
@@ -110,7 +97,8 @@ def edit():
                         	r=input("la nouvelle dependance est :"+ tableau[nbre -1][0] +" "+ tableau[nbre -1][1] + "-->" + new)
                         	main_menu()
                         else:
-                        	print("une erreur est apparue lors de la modification de votre dependance")
+                        	x=input("une erreur est apparue lors de la modification de votre dependance")
+                        	main_menu()
 
                 else:
                 	r=input("error integer")
@@ -122,7 +110,6 @@ def edit():
             print("invalid syntax, try again")
 
             
-
 
 
 
@@ -173,7 +160,6 @@ def delete():
 
 
 
-
 def analyse():
     """
     option d analyse
@@ -216,25 +202,27 @@ def analyse():
 
             elif opti == 2:
 
+            	cls()
             	increment =1
             	for line in tableau:
             		print(str(increment)+".  Table: "+line[0]+" dependance fonctionnelle :"+line[1]+" --> "+line[2])
             		increment +=1
             	try:
-            		a= input("numero de la dependance a analyser")
+            		a= input("numero de la dependance a analyser :")
             		nbre = int(a)
 
             		if nbre > (len(tableau)) or nbre <= 0:
-						print("error integer")
-					else:
-						if dbh.isLogicConsequence(tableau[nbre -1][0],tableau[nbre -1][1],tableau[nbre -1][2]):
-							g = input("votre dependance est bien une consequence logique")
-							analyse()
-						else:
-							h = input("votre dependance n'est pas une consequence logique")
-        					analyse()
-        		except ValueError:
-        			print("invalid syntax, try again")
+            			b=input("error integer")
+            			analyse()
+            		else:
+            			if dbh.isLogicConsequence(tableau[nbre -1][0],tableau[nbre -1][1],tableau[nbre -1][2]):
+            				g = input("votre dependance est bien une consequence logique")
+            				analyse()
+            			else:
+            				h = input("votre dependance n'est pas une consequence logique")
+            				analyse()
+            	except ValueError:
+            		print("invalid syntax, try again")
 
 
 
@@ -278,7 +266,7 @@ def analyse():
                         main_menu()
 
                     else:
-                        c = input("votre schema est en 3nf mai n est pas en BCNF voulez vous faire une decomposition en BCNF? Y/N")
+                        c = input("votre schema est en 3nf mais n est pas en BCNF voulez vous faire une decomposition en BCNF? Y/N")
                         if verif == "Y" or verif == "y":
                             d = input("la decomposition en BCNF serait : "+ getDecompositionBcnf())
                             main_menu()
@@ -310,7 +298,6 @@ def analyse():
                 
         except ValueError:
             print("invalid syntax, try again")
-
 
 
 
@@ -348,7 +335,7 @@ def main_menu():
         	cls()
         	tableau = dbh.getAllDep()
         	if len(tableau) == 0:
-        		d.input("vous n'avez pas encore de dependances fonctionnelles")
+        		d=input("vous n'avez pas encore de dependances fonctionnelles")
         		main_menu()
 
         	else:
@@ -356,8 +343,8 @@ def main_menu():
         		for line in tableau:
         			print(str(increment)+".  Table: "+line[0]+"  dependance fonctionnelle : "+line[1]+"-->"+line[2])
         			increment += 1
-        			defp=input("retour au menu principal")
-        			main_menu()
+        		defp=input("retour au menu principal")
+        		main_menu()
         elif fonctio == 7:
             print("###############################################")
             print("###############################################")
@@ -390,11 +377,18 @@ def init():
     dbh = DfHandler(bdd)
     main_menu()
 
+
+
+
+
 def cls():
     
     """ fonction de clean d ecran """
     
     os.system('cls' if os.name =='nt' else 'clear')
+
+
+
 
 
 print("##################################")
