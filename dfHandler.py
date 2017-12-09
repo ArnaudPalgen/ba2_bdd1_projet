@@ -123,10 +123,10 @@ class DfHandler():
 		allLhs=self.dbh.getAllLhs(table)
 		allAttributs=self.dbh.getTableAttribute(table)
 		for lhs in allLhs:
-			lhsTab=lhs.split()
+			lhsTab=lhs[0].split()
 			for attribute in allAttributs:
 				if attribute not in lhsTab:
-					if not isLogicConsequence(table, lhs, attribute):
+					if not self.isLogicConsequence(table, lhs, attribute):
 						return False
 		return True
 
@@ -156,10 +156,10 @@ class DfHandler():
 		pass
 	
 	def isLogicConsequence(this,table, lhs, rhs):
-		if __depExist(table,lhs,rhs):
+		if self.__depExist(table,lhs,rhs):
 			ens=self.dbh.getDepByRelation(table)
-			ens.pop((table,lhs,rhs))
-			result=self.__doFermeture(ens,lhs)
+			ens.remove([table,lhs,rhs])
+			result=self.__doFermeture(ens,lhs.split())
 			return rhs in result
 		else:
 			return None

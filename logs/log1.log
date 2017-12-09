@@ -111,3 +111,10 @@
 2017-12-09 13:02:23,050 -- root -- DEBUG -- slhs: ['prof']
 2017-12-09 13:02:23,050 -- root -- DEBUG -- liste des attributs: ['prof', 'cours', 'heure']
 2017-12-09 13:02:23,050 -- root -- DEBUG -- est une DF: unif-prof-heure
+2017-12-09 14:09:58,290 -- root -- DEBUG -- slhs: ['prof']
+2017-12-09 14:09:58,290 -- root -- DEBUG -- liste des attributs: ['prof', 'cours', 'heure']
+2017-12-09 14:09:58,290 -- root -- DEBUG -- est une DF: unif-prof-heure
+2017-12-09 14:12:25,789 -- root -- DEBUG -- slhs: ['prof']
+2017-12-09 14:12:25,789 -- root -- DEBUG -- liste des attributs: ['prof', 'cours', 'heure']
+2017-12-09 14:12:25,789 -- root -- DEBUG -- est une DF: unif-prof-heure
+2017-12-09 14:12:44,103 -- root -- DEBUG -- n'est pas une df 1: toto-heure-cours

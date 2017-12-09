@@ -205,7 +205,7 @@ class DataBaseHandler:
 		retourne tous les lhs pour une table donnee
 		"""
 
-		self.cursor.execute(""" SELECT lhs FROM FuncDep WHERE FuncDep.'table' == ? """ (table,))
+		self.cursor.execute(""" SELECT lhs FROM FuncDep WHERE FuncDep.'table' == ? """ ,(table,))
 		retour=[]
 
 		for item in self.cursor:
