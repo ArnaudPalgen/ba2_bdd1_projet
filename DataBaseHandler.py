@@ -11,7 +11,14 @@ class DataBaseHandler:
 		self.cursor.execute("""CREATE TABLE IF NOT EXISTS FuncDep('table' TEXT NOT NULL, lhs TEXT NOT NULL, rhs TEXT NOT NULL, PRIMARY KEY('table', lhs, rhs))""")
 		self.db.commit()
 
+	def __dataOK(*param):
+		for item in param:
+			if(type(item)!=str):
+				raise TypeError("Le type du parametre n'est pas str")
+
+
 	def insertDep(self,table, lhs, rhs):
+		DataBaseHandler.__dataOK(table, lhs, rhs)
 		""" 
 		Insere une DF dans la table FuncDep
 
@@ -32,6 +39,8 @@ class DataBaseHandler:
 
 
 	def removeDep(self,table, lhs, rhs):
+		DataBaseHandler.__dataOK(table, lhs, rhs)
+
 		""" 
 		Supprime une DF dans la table FuncDep
 
@@ -47,6 +56,8 @@ class DataBaseHandler:
 
 
 	def editTableDep(self,table, lhs, rhs, newTable):
+		DataBaseHandler.__dataOK(table, lhs, rhs, newTable)
+
 		""" 
 		Modifie la table d'une DF dans la table FuncDep
 
@@ -62,6 +73,8 @@ class DataBaseHandler:
 		self.db.commit()
 
 	def ediLhsDep(self,table, lhs, rhs, newLhs):
+		DataBaseHandler.__dataOK(table, lhs, rhs, newLhs)
+
 		""" 
 		Modifie la partie de gauche d'une DF dans la table FuncDep
 
@@ -77,6 +90,8 @@ class DataBaseHandler:
 		self.db.commit()
 
 	def editRhsDep(self,table, lhs, rhs, newRhs):
+		DataBaseHandler.__dataOK(table, lhs, rhs, newRhs)
+
 		""" 
 		Modifie la partie de droite d'une DF dans la table FuncDep
 
@@ -104,6 +119,7 @@ class DataBaseHandler:
 		return retour
 
 	def getTableAttribute(self,tableName):
+		DataBaseHandler.__dataOK(tableName)
 		""" 
 		Retourne les attributs d'une table de la base de donnee
 
@@ -118,6 +134,7 @@ class DataBaseHandler:
 		return retour
 
 	def getOneDep(self, table, lhs, rhs):
+		DataBaseHandler.__dataOK(table, lhs, rhs)
 		"""
 		Retourne une DF si elle existe. Si non retourne un tableau vide
 
@@ -137,6 +154,7 @@ class DataBaseHandler:
 			return retour
 
 	def getDepByRelation(self,relation):
+		DataBaseHandler.__dataOK(relation)
 		""" 
 		Retourne toutes les DF d'une table
 
@@ -179,6 +197,7 @@ class DataBaseHandler:
 
 		return retour
 	def DFisOk(self,table, lhs, rhs):
+		DataBaseHandler.__dataOK(table, lhs, rhs)
 		"""
 		retoune les tuples de la table table qui ne respectent pas la df lhs--> rhs
 		lhs est un tuple d'attributs et rhs un str ne contenant qu'un attribut
@@ -201,6 +220,7 @@ class DataBaseHandler:
 		return retour
 
 	def getAllLhs(self, table):
+		DataBaseHandler.__dataOK(table)
 		"""
 		retourne tous les lhs pour une table donnee
 		"""
@@ -209,7 +229,7 @@ class DataBaseHandler:
 		retour=[]
 
 		for item in self.cursor:
-			retour.append(item)
+			retour.append(item[0])
 		return retour
 
 	def getAllTableInFuncDep(self):
@@ -219,7 +239,7 @@ class DataBaseHandler:
 		self.cursor.execute(""" SELECT DISTINCT FuncDep.'table' FROM FuncDep""")
 		retour=[]
 		for item in self.cursor:
-			retour.append(item)
+			retour.append(item[0])
 		return retour
 
 		

@@ -280,3 +280,19 @@
 2017-12-09 15:04:08,013 -- root -- DEBUG -- liste des attributs: ['prof', 'cours', 'heure']
 2017-12-09 15:04:08,013 -- root -- DEBUG -- est une DF: unif-cours-prof
 >>>>>>> 8a934e21a4907494261593573908719720bb4303
+2017-12-09 19:35:44,502 -- root -- DEBUG -- retour de getOneDep: ['unif', 'cours', 'prof'] <class 'list'>
+2017-12-09 19:35:44,503 -- root -- DEBUG -- slhs: ['cours']
+2017-12-09 19:35:44,503 -- root -- DEBUG -- liste des attributs: ['prof', 'cours', 'heure']
+2017-12-09 19:35:44,503 -- root -- DEBUG -- est une DF: unif-cours-prof
+2017-12-09 19:57:50,611 -- root -- DEBUG -- retour de getOneDep: ['unif', 'cours', 'prof'] <class 'list'>
+2017-12-09 19:57:50,612 -- root -- DEBUG -- slhs: ['cours']
+2017-12-09 19:57:50,612 -- root -- DEBUG -- liste des attributs: ['prof', 'cours', 'heure']
+2017-12-09 19:57:50,612 -- root -- DEBUG -- est une DF: unif-cours-prof
+2017-12-09 19:58:34,890 -- root -- DEBUG -- retour de getOneDep: ['unif', 'cours', 'prof'] <class 'list'>
+2017-12-09 19:58:34,890 -- root -- DEBUG -- slhs: ['cours']
+2017-12-09 19:58:34,891 -- root -- DEBUG -- liste des attributs: ['prof', 'cours', 'heure']
+2017-12-09 19:58:34,891 -- root -- DEBUG -- est une DF: unif-cours-prof
+2017-12-09 20:02:22,535 -- root -- DEBUG -- retour de getOneDep: ['unif', 'cours', 'prof'] <class 'list'>
+2017-12-09 20:02:22,536 -- root -- DEBUG -- slhs: ['cours']
+2017-12-09 20:02:22,536 -- root -- DEBUG -- liste des attributs: ['prof', 'cours', 'heure']
+2017-12-09 20:02:22,536 -- root -- DEBUG -- est une DF: unif-cours-prof
