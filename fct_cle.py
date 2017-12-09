@@ -1,4 +1,4 @@
-def tablenamecle()
+def tablenamecle():
 
     t=[]
     i=0
@@ -12,9 +12,7 @@ def tablenamecle()
     a = input("quelle table voulez-vous choisir : "+ c)
     getcle(a)
 
-
-
-def getcle(table)
+def getcle(table):
 
     tAttribut=[]
     tRhs=[]

@@ -42,7 +42,7 @@ class DataBaseHandler:
 
 		"""
 
-		self.cursor.execute("""DELETE FROM FuncDep WHERE Funcdep.'table'=?, lhs=?, rhs=?""", (table, lhs, rhs) )
+		self.cursor.execute("""DELETE FROM FuncDep WHERE FuncDep.'table'=? AND lhs=? AND rhs=?""", (table, lhs, rhs) )
 		self.db.commit()
 
 
@@ -61,7 +61,7 @@ class DataBaseHandler:
 		self.cursor.execute(""" UPDATE FuncDep SET Funcdep.'table'=? where Funcdep.'table'=? AND lhs=? AND rhs=?""", (newTable, table, lhs, rhs))
 		self.db.commit()
 
-	def ediLhsDep(self,tabl, lhs, rhs, newLhs):
+	def ediLhsDep(self,table, lhs, rhs, newLhs):
 		""" 
 		Modifie la partie de gauche d'une DF dans la table FuncDep
 
@@ -147,12 +147,11 @@ class DataBaseHandler:
 		self.cursor.execute(""" SELECT lhs, rhs FROM FuncDep WHERE FuncDep.'table'=?  """, relation)
 		retour=[]
 		for tuples in self.cursor:
-			#if tuples[0]==relation:
-			#	line=[]
-			#	for item in line:
-			#		line.append(item)
-			#	retour.append(line)
-			retour.append(tuples)
+			l=[]
+			for item in tuples:
+				l.append(item)
+			retour.append(l)
+
 			
 		return retour
 	
@@ -182,6 +181,7 @@ class DataBaseHandler:
 	def DFisOk(self,table, lhs, rhs):
 		"""
 		retoune les tuples de la table table qui ne respectent pas la df lhs--> rhs
+		lhs est un tuple d'attributs et rhs un str ne contenant qu'un attribut
 		"""
 
 		s="SELECT t1.*, t2."+rhs+" FROM "+table+" t1, "+table+" t2 WHERE "
@@ -192,7 +192,7 @@ class DataBaseHandler:
 		self.cursor.execute(s)
 
 		retour=[]
-		for tuples in cursor:
+		for tuples in self.cursor:
 			line=[]
 			for item in tuples:
 				line.append(item)
@@ -202,8 +202,24 @@ class DataBaseHandler:
 
 	def getAllLhs(self, table):
 		"""
-		retourne tous les lhs pour une table
+		retourne tous les lhs pour une table donnee
 		"""
 
 		self.cursor.execute(""" SELECT lhs FROM FuncDep WHERE FuncDep.'table' == ? """ (table,))
+		retour=[]
+
+		for item in self.cursor:
+			retour.append(item)
+		return retour
+
+	def getAllTableInFuncDep(self):
+		"""
+		retourne tous les noms de tables presentes dans la table FuncDep
+		"""
+		self.cursor.execute(""" SELECT DISTINCT FuncDep.'table' FROM FuncDep""")
+		retour=[]
+		for item in self.cursor:
+			retour.append(item)
+		return retour
+
 		
