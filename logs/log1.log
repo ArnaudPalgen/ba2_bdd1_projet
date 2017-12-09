@@ -22,3 +22,11 @@
 2017-12-09 10:48:15,003 -- root -- DEBUG -- slhs: ['prof']
 2017-12-09 10:48:15,003 -- root -- DEBUG -- liste des attributs: ['prof', 'cours', 'heure']
 2017-12-09 10:48:15,003 -- root -- DEBUG -- est une DF: unif-prof-heure
+2017-12-09 11:01:53,007 -- root -- DEBUG -- retour de getOneDep: ['unif', 'prof', 'heure'] <class 'list'>
+2017-12-09 11:01:53,008 -- root -- DEBUG -- slhs: ['prof']
+2017-12-09 11:01:53,008 -- root -- DEBUG -- liste des attributs: ['prof', 'cours', 'heure']
+2017-12-09 11:01:53,008 -- root -- DEBUG -- est une DF: unif-prof-heure
+2017-12-09 11:01:53,008 -- root -- DEBUG -- appelle isDep 2:  unif prof cours
+2017-12-09 11:01:53,008 -- root -- DEBUG -- slhs: ['prof']
+2017-12-09 11:01:53,008 -- root -- DEBUG -- liste des attributs: ['prof', 'cours', 'heure']
+2017-12-09 11:01:53,009 -- root -- DEBUG -- est une DF: unif-prof-cours

@@ -6,7 +6,7 @@ def tablenamecle()
         if FuncDep[i][0] in t:
             i+=1
         else:
-            t.append(FuncDep[i][0]
+            t.append(FuncDep[i][0])
             i+=1
     c=tuple(t)
     a = input("quelle table voulez-vous choisir : "+ c)
