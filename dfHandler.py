@@ -125,11 +125,8 @@ class DfHandler():
 			lhsTab=lhs[0].split()
 			for attribute in allAttributs:
 				if attribute not in lhsTab:
-<<<<<<< HEAD
 					if not self.isLogicConsequence(table, lhs, attribute):
-=======
-					if not self.	isLogicConsequence(table, lhs, attribute):
->>>>>>> 8a934e21a4907494261593573908719720bb4303
+
 						return False
 		return True
 
@@ -158,19 +155,14 @@ class DfHandler():
 	def getInutileDF(self):
 		pass
 	
-<<<<<<< HEAD
-	def isLogicConsequence(this,table, lhs, rhs):
-=======
+
 	def isLogicConsequence(self,table, lhs, rhs):
->>>>>>> 8a934e21a4907494261593573908719720bb4303
+
 		if self.__depExist(table,lhs,rhs):
 			ens=self.dbh.getDepByRelation(table)
 			ens.remove([table,lhs,rhs])
 			result=self.__doFermeture(ens,lhs.split())
-<<<<<<< HEAD
-=======
-			print(result)
->>>>>>> 8a934e21a4907494261593573908719720bb4303
+
 			return rhs in result
 		else:
 			return None
