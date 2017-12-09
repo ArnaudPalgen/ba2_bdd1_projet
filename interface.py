@@ -264,7 +264,7 @@ def analyse():
 
                     else:
                     """
-                    if dbh.isBcnf(b):
+                    if dbh.isBcnf(table_name):
                         bcnf = input("votre schema est en BCNF")
                         main_menu()
                     else:
