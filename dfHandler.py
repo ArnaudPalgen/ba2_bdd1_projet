@@ -2,8 +2,8 @@ from DataBaseHandler import DataBaseHandler
 import logging
 #TODO mettre un s a exist
 #TODO demander consequence logique. tout sauf celle donee ?
-logging.basicConfig(filename='logs/log1.log',level=logging.DEBUG,\
-      format='%(asctime)s -- %(name)s -- %(levelname)s -- %(message)s')
+#logging.basicConfig(filename='logs/log1.log',level=logging.DEBUG,\
+#      format='%(asctime)s -- %(name)s -- %(levelname)s -- %(message)s')
 class DfHandler():
 	"""docstring for DfHandler"""
 	TABLE='table'
