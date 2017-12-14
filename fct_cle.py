@@ -73,7 +73,7 @@ def prem3NF(self,table)
 	tabCle = getcle(table)
 	tabAttr = getTableAttribute(table):
 	for i in range(0:len(tabAttr)):
-		attr= tabAttr
+		attr= tabAttr[i]
 		for j in range(0:len(tabCle)):
 			cle = table[j]
 			for h in range(0:len(cle)):

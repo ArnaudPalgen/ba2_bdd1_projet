@@ -136,8 +136,40 @@ class DfHandler():
 		"""
 		return self.dbh.getAllTableInFuncDep()
 
-	def is3nf(self, table, lhs, rhs):
-		pass
+	def is3nf(self, table):
+		if prem3NF(table) or lhs3NF(table):
+			return True
+		else:
+			return False
+
+	def prem3NF(self,table)
+		tabCle = getcle(table)
+		tabAttr = getTableAttribute(table):
+		for i in range(0:len(tabAttr)):
+			attr= tabAttr[i]
+			for j in range(0:len(tabCle)):
+				cle = tableCle[j]
+				for h in range(0:len(cle)):
+					indice = cle[h]
+					if indice == attr:
+						i += 1
+					else:
+						j += 1
+				j += 1
+			return False
+		return True
+
+	def lhs3Nf(self,table):
+		tabLhs = getAllLhs(table)
+		tabCle = getcle(table)
+		for i in range(0:len(tabLhs)):
+			lhs=tabLhs[i]
+			if lhs.split() in tabCle:
+				i += 1
+			else:
+				return False
+		return True
+
 	def __getAttributeNeverInRhs(self, table):
 		attribute=self.dbh.getTableAttribute(table)
 		allRhs=self.dbh.getAllRhs(table)
