@@ -85,7 +85,7 @@ class DfHandler():
 		
 		if whatModif==DfHandler.TABLE:
 			logging.debug("appelle __isDep 1: "+" "+newData+" "+lhs+" "+rhs)
-			if not self.__isDep(newData, lhs, rhs):
+			if not self.__isDep(newData, lhs, rhs) or self.__depExist(newData, lhs, rhs):
 				logging.debug("nouvelle DF invalide 1")
 				return False
 			else:
@@ -94,7 +94,7 @@ class DfHandler():
 		
 		elif whatModif==DfHandler.RHS:
 			logging.debug("appelle __isDep 2: "+" "+table+" "+lhs+" "+newData)
-			if not self.__isDep(table, lhs, newData):#on verifie que la nouvelle df est bien une df
+			if not self.__isDep(table, lhs, newData) or self.__depExist(table, lhs, newData):#on verifie que la nouvelle df est bien une df
 				logging.debug("nouvelle DF invalide 2")
 				return False
 			else:#si c'est pas une df
@@ -103,7 +103,7 @@ class DfHandler():
 		
 		elif whatModif==DfHandler.LHS:
 			logging.debug("appelle __isDep 3: "+" "+table+" "+newData+" "+rhs)
-			if not self.__isDep(table, newData, rhs):
+			if not self.__isDep(table, newData, rhs) or self.__depExist(table, newData, rhs):
 				logging.debug("nouvelle DF invalide 3")
 				return False
 			else:
@@ -138,8 +138,23 @@ class DfHandler():
 
 	def is3nf(self, table, lhs, rhs):
 		pass
+	def __getAttributeNeverInRhs(self, table):
+		attribute=self.dbh.getTableAttribute(table)
+		allRhs=self.dbh.getAllRhs(table)
+		never=[]
+		for item in allRhs:
+			if item not in attribute:
+				never.append(item)
+		return never
+
+
 	def getCle(self, table):
-		pass
+		attribute=self.dbh.getTableAttribute(table)
+		Dfs=self.dbh.getDepByRelation(table)
+		cles=[]
+		neverInRhs=__getAttributeNeverInRhs(table)
+
+
 	def getSuperCle(self):
 		pass
 	def getDecomposition3nf(self):
