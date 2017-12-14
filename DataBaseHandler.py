@@ -128,7 +128,10 @@ class DataBaseHandler:
 
 		"""
 		retour=[]
-		self.cursor.execute("""PRAGMA table_info(unif)""");
+		s="""PRAGMA table_info("""
+		s+=tableName
+		s+=""")"""
+		self.cursor.execute(s);
 		for rows in self.cursor:
 			retour.append(rows[1])
 		return retour

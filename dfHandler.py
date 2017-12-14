@@ -142,8 +142,8 @@ class DfHandler():
 		attribute=self.dbh.getTableAttribute(table)
 		allRhs=self.dbh.getAllRhs(table)
 		never=[]
-		for item in allRhs:
-			if item not in attribute:
+		for item in attribute:
+			if item not in allRhs:
 				never.append(item)
 		return never
 
@@ -154,7 +154,7 @@ class DfHandler():
 				return False
 		return True
 
-	def __exept(A,B):
+	def __exept(self,A,B):
 		"""
 		return A\B
 		"""
@@ -164,28 +164,51 @@ class DfHandler():
 				A.remove(item)
 		return A
 
-	def __recurseCle(self, attribute, cles):
+	def __recurseCle(self, attribute, cles, table):
 		
-		if __iterIsFinish(table, cles):
+		if self.__iterIsFinish(cles, len(attribute)):
 			return cles
 		if len(cles)==0:
 			cles.append(attribute[0])
 		else:
 			newLine=[]
 			for item in cles:
+				if '\n' in item or len(item)==len(attribute):
+					newLine.append(item)
+				#verifier que la branche ne contient pas le caractere de fin
 				#attribut sauf item
-				rajout=__exept(attribute, item)
-				for aRajouter in rajout:
-					new=[aRajouter]
-					new.extend(item)
-					newLine.append(new)
+				else:
+					rajout=self.__exept(attribute, item)
+					for itemToAdd in rajout:
+						new=[itemToAdd]
+						new.extend(item)
+						newLine.append(new)
+
+			for item in newLine:
+				if '\n' not in item and len(item)!= len(attribute):
+					lhs=''
+					for lhsMember in item:
+						lhs+=lhsMember
+						lhs+=' '
+					lhs=lhs[0:len(lhs)-1]
+					isCle=True
+					for att in attribute:
+						if not self.isLogicConsequence(table, lhs, att):
+							isCle=False
+							break
+					if isCle:
+						item.append('\n')
+
+			self.__recurseCle(attribute, newLine, table)
 
 
 	def getCle(self, table):
-		inCle=[]
-		inCle.append(__getAttributeNeverInRhs(table))
+		inCle=self.__getAttributeNeverInRhs(table)
 		attribute=self.dbh.getTableAttribute(table)
-		return __recurseCle(attribute, inCle)
+		print(attribute)
+		print(inCle)
+		print(table)
+		return self.__recurseCle(attribute, inCle, table)
 
 
 
@@ -196,7 +219,7 @@ class DfHandler():
 	def getDecompositionBcnf(self):
 		pass
 	def satisfaitPasDF(self, table, lhs, rhs):
-		if __depExist(table, lhs, rhs):
+		if self.__depExist(table, lhs, rhs):
 			return self.dbh.DFisOk(table, lhs, rhs)
 		else:
 			return None
