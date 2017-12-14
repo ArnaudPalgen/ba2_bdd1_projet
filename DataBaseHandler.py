@@ -232,6 +232,19 @@ class DataBaseHandler:
 			retour.append(item[0])
 		return retour
 
+	def getAllRhs(self, table):
+		DataBaseHandler.__dataOK(table)
+		"""
+		retourne tous les lhs pour une table donnee
+		"""
+
+		self.cursor.execute(""" SELECT rhs FROM FuncDep WHERE FuncDep.'table' == ? """ ,(table,))
+		retour=[]
+
+		for item in self.cursor:
+			retour.append(item[0])
+		return retour
+
 	def getAllTableInFuncDep(self):
 		"""
 		retourne tous les noms de tables presentes dans la table FuncDep
@@ -241,5 +254,3 @@ class DataBaseHandler:
 		for item in self.cursor:
 			retour.append(item[0])
 		return retour
-
-		
