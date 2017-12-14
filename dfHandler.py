@@ -137,14 +137,14 @@ class DfHandler():
 		return self.dbh.getAllTableInFuncDep()
 
 	def is3nf(self, table):
-		if prem3NF(table) or lhs3NF(table):
+		if self.prem3NF(table) or self.lhs3NF(table):
 			return True
 		else:
 			return False
 
 	def prem3NF(self,table)
-		tabCle = getcle(table)
-		tabAttr = getTableAttribute(table):
+		tabCle = self.getCle(table)
+		tabAttr = self.dbh.getTableAttribute(table):
 		for i in range(0:len(tabAttr)):
 			attr= tabAttr[i]
 			for j in range(0:len(tabCle)):
@@ -160,8 +160,8 @@ class DfHandler():
 		return True
 
 	def lhs3Nf(self,table):
-		tabLhs = getAllLhs(table)
-		tabCle = getcle(table)
+		tabLhs = self.dbh.getAllLhs(table)
+		tabCle = self.getCle(table)
 		for i in range(0:len(tabLhs)):
 			lhs=tabLhs[i]
 			if lhs.split() in tabCle:
