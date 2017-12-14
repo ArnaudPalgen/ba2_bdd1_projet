@@ -148,11 +148,45 @@ class DfHandler():
 		return never
 
 
+	def __iterIsFinish(self, ligne, nbrAttribute):
+		for tab in ligne:
+			if('\n' not in tab or len(tab)==nbrAttribute ):#condition d'arret
+				return False
+		return True
+
+	def __exept(A,B):
+		"""
+		return A\B
+		"""
+
+		for item in B:
+			if(item in A):
+				A.remove(item)
+		return A
+
+	def __recurseCle(self, attribute, cles):
+		
+		if __iterIsFinish(table, cles):
+			return cles
+		if len(cles)==0:
+			cles.append(attribute[0])
+		else:
+			newLine=[]
+			for item in cles:
+				#attribut sauf item
+				rajout=__exept(attribute, item)
+				for aRajouter in rajout:
+					new=[aRajouter]
+					new.extend(item)
+					newLine.append(new)
+
+
 	def getCle(self, table):
+		inCle=[]
+		inCle.append(__getAttributeNeverInRhs(table))
 		attribute=self.dbh.getTableAttribute(table)
-		Dfs=self.dbh.getDepByRelation(table)
-		cles=[]
-		neverInRhs=__getAttributeNeverInRhs(table)
+		return __recurseCle(attribute, inCle)
+
 
 
 	def getSuperCle(self):
