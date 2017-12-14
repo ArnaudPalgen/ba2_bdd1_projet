@@ -1,6 +1,8 @@
 from dfHandler import *
 from DataBaseHandler import *
 import os
+import atexit
+
 
 dbh = None
 
@@ -349,15 +351,6 @@ def main_menu():
         		back=input("retour au menu principal")
         		main_menu()
         elif fonctio == 7:
-            print("###############################################")
-            print("###############################################")
-            print("##### #####  #####  ####   ####   #    #  #####")
-            print("#     #   #  #   #  #   #  #   #   #  #   #    ")
-            print("#  ## #   #  #   #  #   #  ####     ##    #####")
-            print("#  #  #   #  #   #  #   #  #   #    ##    #    ")
-            print("####  #####  #####  ####   ####     ##    #####")
-            print("###############################################")
-            print("###############################################")
             exit()
         else:
             error_int=input("invalid number, try again")
@@ -390,6 +383,7 @@ def cls():
     
     os.system('cls' if os.name =='nt' else 'clear')
 
+"""
 def cleaning(x):
 
 
@@ -412,9 +406,20 @@ def cleaning(x):
             i+=1
 
     return x
+"""
 
+def onclose():
+    print("###############################################")
+    print("###############################################")
+    print("##### #####  #####  ####   ####   #    #  #####")
+    print("#     #   #  #   #  #   #  #   #   #  #   #    ")
+    print("#  ## #   #  #   #  #   #  ####     ##    #####")
+    print("#  #  #   #  #   #  #   #  #   #    ##    #    ")
+    print("####  #####  #####  ####   ####     ##    #####")
+    print("###############################################")
+    print("###############################################")
 
-
+atexit.register(onclose)
 
 
 print("##################################")

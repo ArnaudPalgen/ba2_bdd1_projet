@@ -46,3 +46,54 @@ def getcle(table):
             h+=1
         else:
             h+=1
+
+
+for i in aLhs:
+	if i ==',' and i+1 == ' ':
+		aLhs.remove(i)
+		i+2
+	elif i ==',' and i+1 !=' ':
+		aLhs.revome(i)
+		aLhs.insert(i,' ')
+		i+1
+	else:
+		i+1
+
+
+
+
+def is3NF(self, table):
+	if prem3NF(table) or lhs3NF(table):
+		return True
+	else:
+		return False
+
+
+def prem3NF(self,table)
+	tabCle = getcle(table)
+	tabAttr = getTableAttribute(table):
+	for i in range(0:len(tabAttr)):
+		attr= tabAttr
+		for j in range(0:len(tabCle)):
+			cle = table[j]
+			for h in range(0:len(cle)):
+				indice = cle[h]
+				if indice == attr:
+					attr += 1
+				else:
+					indice += 1
+			cle += 1
+		return False
+	return True
+
+def lhs3Nf(self,table):
+
+	tabLhs = getAllLhs(table)
+	tabCle = getcle(table)
+	for i in range(0:len(tabLhs)):
+		lhs=tabLhs[i]
+		if lhs.split() in tabCle:
+			i += 1
+		else:
+			return False
+	return True
