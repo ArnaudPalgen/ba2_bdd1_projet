@@ -12,13 +12,14 @@ def add():
     cls()
     print("rentrer les elements suivants :")
     addTables = input("nom de la table : ")
-    addLhs = input("partie gauche de la dependance fonctionnelle : ")
+    aLhs = input("partie gauche de la dependance fonctionnelle(si vous avez plusieurs elements separez les par des espaces et non des virgules) : ")
     addRhs = input("partie droite de la dependance fonctionnelle : ")
 
+    addLhs=cleaning(aLhs)
     
-    dep=dbh.insertDep(addTables, addLhs, aRhs)
+    dep=dbh.insertDep(addTables, addLhs, addRhs)
     if dep == False:
-        error_add=input("votre dependance n'a pas pu etre ajoutee. Sorry :( ")
+        error_add=input("votre dependance n'a pas pu etre ajoutee. Sorry :( (verifiez que la dependance n'existe pas deja ou a ete bien ecrite) ")
         main_menu()
 
     print_dep=input("Votre dependance a bien ete ajoutee : "+ addLhs + "-->" +addRhs)
@@ -75,7 +76,8 @@ def edit():
                         error_edit=input("une erreur est apparue lors de la modification de votre dependance")
                         main_menu()
                 elif newnbre == 2:
-                    retour=dbh.editDep(tableau[nbre -1][0],tableau[nbre -1][1],tableau[nbre -1][2],new, dbh.LHS)
+                    newLhs=cleaning(new)
+                    retour=dbh.editDep(tableau[nbre -1][0],tableau[nbre -1][1],tableau[nbre -1][2],newLhs, dbh.LHS)
                     if retour:
                     	
                         print("votre donnee a bien ete modifiee")
@@ -387,6 +389,29 @@ def cls():
     """ fonction de clean d ecran """
     
     os.system('cls' if os.name =='nt' else 'clear')
+
+def cleaning(x):
+
+
+    if x[0] == " ":
+        x[1:]
+        cleaning(x)
+    if x[len(x)-1] ==  " ":
+        x.pop()
+        cleaning(x)
+
+
+    for i in range(0,len(x)):
+        if x[i] ==',' and x[i+1] == ' ':
+            x[0:i]+x[i+1:]
+            i+=2
+        elif x[i] ==',' and x[i+1] !=' ':
+            x.replace(i,',',' ')
+            i+=1
+        else:
+            i+=1
+
+    return x
 
 
 
