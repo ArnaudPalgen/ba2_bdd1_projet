@@ -1,5 +1,6 @@
 from DataBaseHandler import DataBaseHandler
 import logging
+import copy
 #TODO mettre un s a exist
 #TODO demander consequence logique. tout sauf celle donee ?
 #logging.basicConfig(filename='logs/log1.log',level=logging.DEBUG,\
@@ -142,14 +143,14 @@ class DfHandler():
 		else:
 			return False
 
-	def prem3NF(self,table)
+	def prem3NF(self,table):
 		tabCle = self.getCle(table)
-		tabAttr = self.dbh.getTableAttribute(table):
-		for i in range(0:len(tabAttr)):
+		tabAttr = self.dbh.getTableAttribute(table)
+		for i in range(0,len(tabAttr)):
 			attr= tabAttr[i]
-			for j in range(0:len(tabCle)):
+			for j in range(0,len(tabCle)):
 				cle = tableCle[j]
-				for h in range(0:len(cle)):
+				for h in range(0,len(cle)):
 					indice = cle[h]
 					if indice == attr:
 						i += 1
@@ -162,7 +163,7 @@ class DfHandler():
 	def lhs3Nf(self,table):
 		tabLhs = self.dbh.getAllLhs(table)
 		tabCle = self.getCle(table)
-		for i in range(0:len(tabLhs)):
+		for i in range(0,len(tabLhs)):
 			lhs=tabLhs[i]
 			if lhs.split() in tabCle:
 				i += 1
@@ -181,6 +182,8 @@ class DfHandler():
 
 
 	def __iterIsFinish(self, ligne, nbrAttribute):
+		if len(ligne)==0:
+			return False
 		for tab in ligne:
 			if('\n' not in tab or len(tab)==nbrAttribute ):#condition d'arret
 				return False
@@ -190,21 +193,46 @@ class DfHandler():
 		"""
 		return A\B
 		"""
+		retour=[]
+		for item in A:
+			if(item not in B):
+				retour.append(item)
+		return retour
+	def isAKey(self, futureKey, attribute, table):
+		att=copy.deepcopy(attribute)
+		possibleKey=copy.deepcopy(futureKey)
+		result=self.__doFermeture(self.dbh.getDepByRelation(table), possibleKey)
+		result.sort()
+		att.sort()
+		return result == att
 
-		for item in B:
-			if(item in A):
-				A.remove(item)
-		return A
 
-	def __recurseCle(self, attribute, cles, table):
-		
+	def __recurseCle(self, attribute, cles, table, debug):
+		print(attribute)
+		print(cles)
 		if self.__iterIsFinish(cles, len(attribute)):
+			print('cles finale: '+ str(cles))
 			return cles
+
+		newLine=[]
+		
 		if len(cles)==0:
-			cles.append(attribute[0])
-		else:
-			newLine=[]
-			for item in cles:
+			print("here2")
+			newLine=[self.__getAttributeNeverInRhs(table)]
+			print('toto '+ str(newLine))
+			if len(newLine[0])==0: 
+				newLine[0].append(attribute[0])
+			if self.isAKey(newLine[0], attribute, table):
+				print('toto 1B'+ str(newLine))
+				print('isAKey 1')
+				newLine[0].append('\n')
+				print('toto2 '+ str(newLine))
+
+		
+
+		else:#TODO regarder dessous
+			print("here3")
+			for item in cles:# pour chaque candidate cle
 				if '\n' in item or len(item)==len(attribute):
 					newLine.append(item)
 				#verifier que la branche ne contient pas le caractere de fin
@@ -214,33 +242,30 @@ class DfHandler():
 					for itemToAdd in rajout:
 						new=[itemToAdd]
 						new.extend(item)
+						if self.isAKey(new, attribute, table):
+							print('isKey 2')
+							new.append('\n')
 						newLine.append(new)
 
-			for item in newLine:
-				if '\n' not in item and len(item)!= len(attribute):
-					lhs=''
-					for lhsMember in item:
-						lhs+=lhsMember
-						lhs+=' '
-					lhs=lhs[0:len(lhs)-1]
-					isCle=True
-					for att in attribute:
-						if not self.isLogicConsequence(table, lhs, att):
-							isCle=False
-							break
-					if isCle:
-						item.append('\n')
 
-			self.__recurseCle(attribute, newLine, table)
+		print(newLine)
+		print("------------------------------------------------------")
+		debug+=1
+		if debug==10:
+			exit()
+		return self.__recurseCle(attribute, newLine, table, debug)
 
 
 	def getCle(self, table):
-		inCle=self.__getAttributeNeverInRhs(table)
+		inCle=[]
 		attribute=self.dbh.getTableAttribute(table)
 		print(attribute)
 		print(inCle)
 		print(table)
-		return self.__recurseCle(attribute, inCle, table)
+		print("------------------------------------------------------")
+		print("------------------------------------------------------")
+		debug=0
+		return self.__recurseCle(attribute, inCle, table, debug)
 
 
 
@@ -266,6 +291,9 @@ class DfHandler():
 			ens=self.dbh.getDepByRelation(table)
 			ens.remove([table,lhs,rhs])
 			result=self.__doFermeture(ens,lhs.split())
+			print('in consequence')
+			print(result)
+			print(rhs)
 
 			return rhs in result
 		else:
@@ -277,13 +305,20 @@ class DfHandler():
 		"""
 		reste=dFs#ensemble de tuple ( DF )
 		fermeture=x #ensemble d'attributs
+		#print(dFs)
+		#print('IN FERMETURE ----------------------------------------------------------------------------')
 		for couple in reste:
 
 			w=couple[1]
 			z=couple[2]
+			#print('w= '+w)
+			#print('z= '+z)
+			#print('fermeture: '+str(fermeture))
 			if self.__isIn(w.split(),fermeture):
-				reste.remove(couple)
+				#print('w is in fermeture')
+				#reste.remove(couple)
 				fermeture.append(z)
+			#print(fermeture)
 		return fermeture
 
 	def __isIn(self,small, big):

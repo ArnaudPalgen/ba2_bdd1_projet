@@ -21,4 +21,6 @@ else:
 	db.close()
 
 handler=DfHandler("tableTest")
-print(handler.getCle('lettre'))
+
+r=handler.getCle('lettre')
+print(r)
