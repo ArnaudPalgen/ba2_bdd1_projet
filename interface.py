@@ -14,10 +14,8 @@ def add():
     cls()
     print("rentrer les elements suivants :")
     addTables = input("nom de la table : ")
-    aLhs = input("partie gauche de la dependance fonctionnelle(si vous avez plusieurs elements separez les par des espaces et non des virgules) : ")
+    addLhs = input("partie gauche de la dependance fonctionnelle(si vous avez plusieurs elements separez les par des espaces et non des virgules) : ")
     addRhs = input("partie droite de la dependance fonctionnelle : ")
-
-    addLhs=cleaning(aLhs)
     
     dep=dbh.insertDep(addTables, addLhs, addRhs)
     if dep == False:
