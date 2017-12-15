@@ -149,7 +149,7 @@ class DfHandler():
 		for i in range(0,len(tabAttr)):
 			attr= tabAttr[i]
 			for j in range(0,len(tabCle)):
-				cle = tableCle[j]
+				cle = tabCle[j]
 				for h in range(0,len(cle)):
 					indice = cle[h]
 					if indice == attr:
@@ -160,7 +160,7 @@ class DfHandler():
 			return False
 		return True
 
-	def lhs3Nf(self,table):
+	def lhs3NF(self,table):
 		tabLhs = self.dbh.getAllLhs(table)
 		tabCle = self.getCle(table)
 		for i in range(0,len(tabLhs)):
@@ -296,7 +296,8 @@ class DfHandler():
 					index+=1
 					item=keyAndSuperKey[index]
 
-
+		self.cleanKey(key)
+		self.cleanKey(superKey)
 		return key,superKey
 
 	def getDecomposition3nf(self):
