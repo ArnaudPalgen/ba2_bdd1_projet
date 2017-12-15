@@ -183,11 +183,13 @@ class DfHandler():
 
 	def __iterIsFinish(self, ligne, nbrAttribute):
 		if len(ligne)==0:
-			return False
-		for tab in ligne:
-			if('\n' not in tab or len(tab)==nbrAttribute ):#condition d'arret
-				return False
-		return True
+			return True
+		for cle in ligne:
+			#pas continuer cad return false
+			# pas continuer quand pour toute cle j'ai \n ou j'ai tous les attributs
+			if '\n' not in cle and nbrAttribute != len(cle):
+				return True
+		return False
 
 	def __exept(self,A,B):
 		"""
@@ -199,39 +201,43 @@ class DfHandler():
 				retour.append(item)
 		return retour
 	def isAKey(self, futureKey, attribute, table):
+
 		att=copy.deepcopy(attribute)
 		possibleKey=copy.deepcopy(futureKey)
 		result=self.__doFermeture(self.dbh.getDepByRelation(table), possibleKey)
 		result.sort()
 		att.sort()
+
 		return result == att
 
 
 	def __recurseCle(self, attribute, cles, table, debug):
-		print(attribute)
+		#print(attribute)
 		print(cles)
-		if self.__iterIsFinish(cles, len(attribute)):
+		print(self.__iterIsFinish(cles, len(attribute)))
+		print(len(attribute))
+		if not self.__iterIsFinish(cles, len(attribute)):
 			print('cles finale: '+ str(cles))
 			return cles
 
 		newLine=[]
 		
 		if len(cles)==0:
-			print("here2")
+			#print("here2")
 			newLine=[self.__getAttributeNeverInRhs(table)]
-			print('toto '+ str(newLine))
+			#print('toto '+ str(newLine))
 			if len(newLine[0])==0: 
 				newLine[0].append(attribute[0])
 			if self.isAKey(newLine[0], attribute, table):
-				print('toto 1B'+ str(newLine))
-				print('isAKey 1')
+				#print('toto 1B'+ str(newLine))
+				#print('isAKey 1')
 				newLine[0].append('\n')
-				print('toto2 '+ str(newLine))
+				#print('toto2 '+ str(newLine))
 
 		
 
 		else:#TODO regarder dessous
-			print("here3")
+			#print("here3")
 			for item in cles:# pour chaque candidate cle
 				if '\n' in item or len(item)==len(attribute):
 					newLine.append(item)
@@ -243,29 +249,28 @@ class DfHandler():
 						new=[itemToAdd]
 						new.extend(item)
 						if self.isAKey(new, attribute, table):
-							print('isKey 2')
+							#print('isKey 2')
 							new.append('\n')
 						newLine.append(new)
 
 
-		print(newLine)
-		print("------------------------------------------------------")
+		#print(newLine)
+		#print("------------------------------------------------------")
 		debug+=1
-		if debug==10:
+		if debug==100000000:
 			exit()
 		return self.__recurseCle(attribute, newLine, table, debug)
 
 
 	def getCle(self, table):
+		print('welcome in getCle')
 		inCle=[]
 		attribute=self.dbh.getTableAttribute(table)
-		print(attribute)
-		print(inCle)
-		print(table)
-		print("------------------------------------------------------")
-		print("------------------------------------------------------")
 		debug=0
-		return self.__recurseCle(attribute, inCle, table, debug)
+		retour=self.__recurseCle(attribute, inCle, table, debug)
+		print('toto')
+		#print(retour)
+		return retour
 
 
 
@@ -299,27 +304,55 @@ class DfHandler():
 		else:
 			return None
 
+	# def __doFermeture(self, dFs, x):
+	# 	"""
+	# 	retourne la fermeture de l'ensemble x d'attribut par rapport a un ensemble dfs de DFs
+	# 	"""
+	# 	print('IN FERMETURE ----------------------------------------------------------------------------')
+	# 	reste=copy.deepcopy(dFs)#ensemble de tuple ( DF )
+	# 	fermeture=copy.deepcopy(x) #ensemble d'attributs
+	# 	print('receive reste: '+str(reste))
+	# 	print('receive fermeture '+str(fermeture))
+	# 	print('rentre boucle --------------------------------------------------------------------------------')
+	# 	while len(reste)>0:
+	# 		couple=reste[0]
+	# 		w=couple[1]
+	# 		z=couple[2]
+	# 		print('w= '+w)
+	# 		print('z= '+z)
+	# 		print('fermeture: '+str(fermeture))
+	# 		if self.__isIn(w.split(),fermeture):
+	# 			print('w is in fermeture')
+	# 			reste.remove(couple)
+	# 			if z not in fermeture:
+	# 				fermeture.append(z)
+	# 		else:
+	# 			break
+	# 		print('fermeture apres '+str(fermeture))
+		# 	return fermeture
 	def __doFermeture(self, dFs, x):
-		"""
-		retourne la fermeture de l'ensemble x d'attribut par rapport a un ensemble dfs de DFs
-		"""
-		reste=dFs#ensemble de tuple ( DF )
-		fermeture=x #ensemble d'attributs
-		#print(dFs)
-		#print('IN FERMETURE ----------------------------------------------------------------------------')
-		for couple in reste:
+		df=copy.deepcopy(dFs)
+		newDep=copy.deepcopy(x)
+		oldDep=None
+		#print('dfs: '+str(df))
+		#print('attributs: '+str(newDep))
 
-			w=couple[1]
-			z=couple[2]
-			#print('w= '+w)
-			#print('z= '+z)
-			#print('fermeture: '+str(fermeture))
-			if self.__isIn(w.split(),fermeture):
-				#print('w is in fermeture')
-				#reste.remove(couple)
-				fermeture.append(z)
-			#print(fermeture)
-		return fermeture
+		while oldDep != newDep:
+			oldDep=copy.deepcopy(newDep)
+			for item in df:
+				w=item[1]
+				z=item[2]
+				# print('-----------------------------')
+				# print('w |'+w+'|')
+				# print('z '+ z)
+				# print('newDep: '+str(newDep))
+				# print('-----------------------------')
+				if self.__isIn(w.split(), newDep):
+					#print('w is in newDep')
+					if z not in newDep:
+						newDep.append(z)
+		#print('fin '+str(newDep))
+		return newDep
 
 	def __isIn(self,small, big):
 		"""
