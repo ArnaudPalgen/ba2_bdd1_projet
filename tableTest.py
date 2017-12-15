@@ -17,10 +17,13 @@ if var:
 	db.commit()
 	db.close()
 else:
-	print("nothing to do")
+	print("table already exist")
 	db.close()
 
 handler=DfHandler("tableTest")
 
 r=handler.getCle('lettre')
+r2=handler.getSuperCle('lettre')
 print(r)
+print('---------------------------------------------------------')
+print(r2)

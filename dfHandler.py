@@ -213,11 +213,11 @@ class DfHandler():
 
 	def __recurseCle(self, attribute, cles, table, debug):
 		#print(attribute)
-		print(cles)
-		print(self.__iterIsFinish(cles, len(attribute)))
-		print(len(attribute))
+		#print(cles)
+		#print(self.__iterIsFinish(cles, len(attribute)))
+		#print(len(attribute))
 		if not self.__iterIsFinish(cles, len(attribute)):
-			print('cles finale: '+ str(cles))
+			#print('cles finale: '+ str(cles))
 			return cles
 
 		newLine=[]
@@ -263,19 +263,42 @@ class DfHandler():
 
 
 	def getCle(self, table):
-		print('welcome in getCle')
+		result=self.getSuperKeyAndKey(table)
+		return result[0]
+	def getSuperCle(self, table):
+		result=self.getSuperKeyAndKey(table)
+		return result[1]
+	def cleanKey(self, keys):
+		for key in keys:
+			key.remove('\n')
+
+	def getSuperKeyAndKey(self, table):
 		inCle=[]
 		attribute=self.dbh.getTableAttribute(table)
 		debug=0
-		retour=self.__recurseCle(attribute, inCle, table, debug)
-		print('toto')
-		#print(retour)
-		return retour
+		keyAndSuperKey=self.__recurseCle(attribute, inCle, table, debug)
+		keyAndSuperKey.append('XX')
+
+		key=[]
+		superKey=[]
+		while len(keyAndSuperKey)>1:
+			cle=keyAndSuperKey.pop(0)
+			key.append(cle)
+			index=0
+			item=keyAndSuperKey[index]
+			while item != 'XX' :
+				if self.__isIn(cle, item ):
+					keyAndSuperKey.remove(item)
+					superKey.append(item)
+					item=keyAndSuperKey[index]
+
+				else:
+					index+=1
+					item=keyAndSuperKey[index]
 
 
+		return key,superKey
 
-	def getSuperCle(self):
-		pass
 	def getDecomposition3nf(self):
 		pass
 	def getDecompositionBcnf(self):
