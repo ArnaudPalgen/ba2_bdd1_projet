@@ -138,6 +138,8 @@ class DfHandler():
 		return self.dbh.getAllTableInFuncDep()
 
 	def is3nf(self, table):
+		#print("3nf premier: "+str(self.prem3NF(table)))
+		#print("3NF lhs: "+str(self.lhs3NF(table)))
 		if self.prem3NF(table) or self.lhs3NF(table):
 			return True
 		else:
