@@ -1,3 +1,4 @@
+# coding: utf-8
 from DataBaseHandler import DataBaseHandler
 import logging
 import copy
@@ -228,7 +229,7 @@ class DfHandler():
 			#print("here2")
 			newLine=[self.__getAttributeNeverInRhs(table)]
 			#print('toto '+ str(newLine))
-			if len(newLine[0])==0: 
+			if len(newLine[0])==0 :
 				newLine[0].append(attribute[0])
 			if self.isAKey(newLine[0], attribute, table):
 				#print('toto 1B'+ str(newLine))
@@ -254,12 +255,11 @@ class DfHandler():
 							#print('isKey 2')
 							new.append('\n')
 						newLine.append(new)
-
-
-		#print(newLine)
-		#print("------------------------------------------------------")
+		print("------------------------------------------------------")
+		print(newLine)
+		print("------------------------------------------------------\n")
 		debug+=1
-		if debug==100000000:
+		if debug==1000000000000000000000000000000000000000000000000000000:
 			exit()
 		return self.__recurseCle(attribute, newLine, table, debug)
 
