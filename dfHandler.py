@@ -124,7 +124,7 @@ class DfHandler():
 		allLhs=self.dbh.getAllLhs(table)
 		allAttributs=self.dbh.getTableAttribute(table)
 		for lhs in allLhs:
-			lhsTab=lhs[0].split()
+			lhsTab=lhs.split()
 			for attribute in allAttributs:
 				if attribute not in lhsTab:
 					if not self.isLogicConsequence(table, lhs, attribute):
@@ -138,38 +138,46 @@ class DfHandler():
 		return self.dbh.getAllTableInFuncDep()
 
 	def is3nf(self, table):
-		print("3nf premier: "+str(self.prem3NF(table)))
-		print("3NF lhs: "+str(self.lhs3NF(table)))
+		#print("3nf premier: "+str(self.prem3NF(table)))
+		#print("3NF lhs: "+str(self.lhs3NF(table)))
 		if self.prem3NF(table) or self.lhs3NF(table):
 			return True
 		else:
 			return False
 
 	def prem3NF(self,table):
-		tabCle = self.getCle(table)
-		tabAttr = self.dbh.getTableAttribute(table)
-		for i in range(0,len(tabAttr)):
-			attr= tabAttr[i]
-			for j in range(0,len(tabCle)):
-				cle = tabCle[j]
-				for h in range(0,len(cle)):
-					indice = cle[h]
-					if indice == attr:
-						i += 1
-					else:
-						j += 1
-				j += 1
-			return False
-		return True
+		# tabCle = self.getCle(table) #tableau de tableau
+		# tabAttr = self.dbh.getTableAttribute(table) #tableau avec chaque attribut
+		# for i in range(0,len(tabAttr)):
+		# 	attr= tabAttr[i]  #un attribut en position i dans la table avec tous les attributs
+		# 	for j in range(0,len(tabCle)):
+		# 		cle = tabCle[j]  #une clé en position j dans la table contenant les clés
+		# 		for h in range(0,len(cle)):
+		# 			indice = cle[h]  #un elem de cle
+		# 			if indice == attr:
+		# 				i += 1
+		# 			else:
+		# 				j += 1
+		# 		j += 1
+		# 	return False
+		# return True
+
+		attribute = self.dbh.getTableAttribute(table)
+		cles = self.getCle(table)
+		for att in attribute:
+			for cle in cles:
+				if att in cle:
+					# print(att)
+					# print(cle)
+					return True
+		return False
 
 	def lhs3NF(self,table):
 		tabLhs = self.dbh.getAllLhs(table)
 		tabCle = self.getCle(table)
 		for i in range(0,len(tabLhs)):
 			lhs=tabLhs[i]
-			if lhs.split() in tabCle:
-				i += 1
-			else:
+			if lhs.split() not in tabCle:
 				return False
 		return True
 
@@ -338,9 +346,9 @@ class DfHandler():
 			ens=self.dbh.getDepByRelation(table)
 			ens.remove([table,lhs,rhs])
 			result=self.__doFermeture(ens,lhs.split())
-			print('in consequence')
-			print(result)
-			print(rhs)
+			# print('in consequence')
+			# print(result)
+			# print(rhs)
 
 			return rhs in result
 		else:
