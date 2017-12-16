@@ -180,7 +180,7 @@ def analyse():
 			print("que voulez-vous faire?")
 			print("1. determiner les cles et supercles d'un schema")
 			print("2. determiner les consequences logiques")
-			print("3. restreindre le schema")
+			print("3. DF non satisfaite(s)")
 			print("4. BCNF ou 3NF")
 			print("5. retour au menu principal")
 			nbre = input("entrez le nbre: ")
@@ -247,7 +247,19 @@ def analyse():
 
 
 			elif option == 3:
-				pass
+				print("quelle table voulez-vous determiner?")
+				t= dbh.getAllTableInFuncDep()
+				for i in t:
+					print(i)
+				table_name=input("entrez le nom de la table: ")
+				if table_name in t == False:
+					table_name = input("erreur de synthaxe veuillez reecrire le nom de la table :")
+				else:
+					df = dbh.getDepByRelation(table_name)
+					for dep in df:
+						print(dbh.satisfaitPasDF(table_name,dep[1],dep[2]))
+					a = input("voila les df non satisfaite")
+					analyse()
 
 
 

@@ -138,6 +138,10 @@ class DfHandler():
 		"""
 		return self.dbh.getAllTableInFuncDep()
 
+	def getDepByRelation(self,relation):
+
+		return self.dbh.getDepByRelation(relation)
+
 	def is3nf(self, table):
 		#print("3nf premier: "+str(self.prem3NF(table)))
 		#print("3NF lhs: "+str(self.lhs3NF(table)))
@@ -329,8 +333,13 @@ class DfHandler():
 
 	def getDecomposition3nf(self):
 		pass
-	def getDecompositionBcnf(self):
-		pass
+
+	def sortDep(self, table):
+		df=self.dbh.getDepByRelation(table)
+		for dep in df:
+			dep.pop(0)
+		df.sort()
+
 	def satisfaitPasDF(self, table, lhs, rhs):
 		if self.__depExist(table, lhs, rhs):
 			return self.dbh.DFisOk(table, lhs, rhs)

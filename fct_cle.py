@@ -97,3 +97,11 @@ def lhs3Nf(self,table):
 		else:
 			return False
 	return True
+
+
+
+def sortDep(self, table):
+	df=self.dbh.getDepByRelation(table)
+	for dep in df:
+		dep.pop(0)
+	df.sort()
