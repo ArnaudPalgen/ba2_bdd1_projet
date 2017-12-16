@@ -166,141 +166,142 @@ def delete():
 
 
 def analyse():
-    """
+	"""
     option d analyse
     """
-    cls()
-    tableau = dbh.getAllDep() #ajout de getAllDep à dfHandler
-    if len(tableau)== 0:
-        empty_table=input("la table ne contient aucun element a analyser")
-        main_menu()
-    else:
-        try:
-        
-            print("que voulez-vous faire?")
-            print("1. determiner les cles et supercles d'un schema")
-            print("2. determiner les consequences logiques")
-            print("3. restreindre le schema")
-            print("4. BCNF ou 3NF")
-            print("5. retour au menu principal")
-            nbre = input("entrez le nbre: ")
-            option = int(nbre)
+	cls()
+	tableau = dbh.getAllDep() #ajout de getAllDep à dfHandler
+	if len(tableau)== 0:
+		empty_table=input("la table ne contient aucun element a analyser")
+		main_menu()
+	else:
+		try:
 
-            if option ==1:
-                try:
-                
-                    choice=input("voulez vous les cles(1) ou les supercles(2)?")
-                    cle=int(choice)
-                    if cle ==1:
-                        getCle()
-                    elif cle == 2:
-                        getSuperCle()
-                    else:
-                        error_int=input("error integer")
-                        analyse()
-                except ValueError:
-                    except_error = input("invalid syntax")
-                    analyse()
+			print("que voulez-vous faire?")
+			print("1. determiner les cles et supercles d'un schema")
+			print("2. determiner les consequences logiques")
+			print("3. restreindre le schema")
+			print("4. BCNF ou 3NF")
+			print("5. retour au menu principal")
+			nbre = input("entrez le nbre: ")
+			option = int(nbre)
 
+			if option ==1:
+				try:
 
+					print("quelle table voulez-vous determiner?")
+					t= dbh.getAllTableInFuncDep()
+					for i in t:
+						print(i)
+					table_name=input("entrez le nom de la table: ")
+					if table_name in t == False:
+						table_name = input("erreur de synthaxe veuillez reecrire le nom de la table :")
+					else:
 
-
-
-            elif option == 2:
-
-            	cls()
-            	increment =1
-            	for line in tableau:
-            		print(str(increment)+".  Table: "+line[0]+" dependance fonctionnelle :"+line[1]+" --> "+line[2])
-            		increment +=1
-            	try:
-            		num= input("numero de la dependance a analyser :")
-            		nbre = int(num)
-
-            		if nbre > (len(tableau)) or nbre <= 0:
-            			error_int=input("error integer")
-            			analyse()
-            		else:
-            			if dbh.isLogicConsequence(tableau[nbre -1][0],tableau[nbre -1][1],tableau[nbre -1][2]):
-            				print_LC_OK = input("votre dependance est bien une consequence logique")
-            				analyse()
-            			else:
-            				print_LC_NOT = input("votre dependance n'est pas une consequence logique")
-            				analyse()
-            	except ValueError:
-                    except_error=input("invalid syntax, try again")
-                    analyse()
+						choice=input("voulez vous les cles(1) ou les supercles(2)?")
+						cle=int(choice)
+						if cle ==1:
+							cle=input(dbh.getCle(table_name))
+							main_menu()
+						elif cle == 2:
+							supercle=input(dbh.getSuperCle(table_name))
+							main_menu()
+						else:
+							error_int=input("error integer")
+							analyse()
+				except ValueError:
+					except_error = input("invalid syntax")
+					analyse()
 
 
 
 
 
-            elif option == 3:
-                pass
+			elif option == 2:
+
+				cls()
+				increment =1
+				for line in tableau:
+					print(str(increment)+".  Table: "+line[0]+" dependance fonctionnelle :"+line[1]+" --> "+line[2])
+					increment +=1
+				try:
+					num= input("numero de la dependance a analyser :")
+					nbre = int(num)
+
+					if nbre > (len(tableau)) or nbre <= 0:
+						error_int=input("error integer")
+						analyse()
+					else:
+						if dbh.isLogicConsequence(tableau[nbre -1][0],tableau[nbre -1][1],tableau[nbre -1][2]):
+							print_LC_OK = input("votre dependance est bien une consequence logique")
+							analyse()
+						else:
+							print_LC_NOT = input("votre dependance n'est pas une consequence logique")
+							analyse()
+				except ValueError:
+					except_error=input("invalid syntax, try again")
+					analyse()
 
 
 
 
 
-            elif option == 4:
-                print("quelle table voulez-vous determiner?")
-                t= dbh.getAllTableInFuncDep()
-                for i in t:
-                    print(i)
-                table_name=input("entrez le nom de la table: ")
-                if table_name in t == False:
-                    table_name = input("erreur de synthaxe veuillez reecrire le nom de la table :")
-                else:
-                    """
-                    if is3nf(b) == False:
-                        c = input("votre schema n est pas en 3nf donc ne sera pas en BCNF voulez vous faire une decomposition? Y/N")
-                        if verif == "Y" or verif == "y":
-                            print("la decomposition en 3nf serait : "+ getDecomposition3nf())
-                            d = input("la decomposition en BCNF serait : "+ getDecompositionBcnf())
-                            main_menu()
-                        elif verif == "N" or verif == "n":
-                            analyse()
-                        else:
-                            print("erreur synthaxe")
-                            analyse()
-
-                    else:
-                    """
-                    if dbh.isBcnf(table_name):
-                        bcnf = input("votre schema est en BCNF")
-                        main_menu()
-                    else:
-                        not_bcnf = input("votre schema est en 3nf mais n est pas en BCNF voulez vous faire une decomposition en BCNF? (Y/N) :")
-                        if not_bcnf == "Y" or not_bcnf == "y":
-                            decomp_bcnf = input("la decomposition en BCNF serait : "+ getDecompositionBcnf())
-                            main_menu()
-                        elif not_bcnf == "N" or not_bcnf == "n":
-                            analyse()
-                        else:
-                            error_synth=input("erreur synthaxe")
-                            analyse()
+			elif option == 3:
+				pass
 
 
 
 
 
-            elif option == 5:
-                main_menu()
+			elif option == 4:
+				print("quelle table voulez-vous determiner?")
+				t= dbh.getAllTableInFuncDep()
+				for i in t:
+					print(i)
+				table_name=input("entrez le nom de la table: ")
+				if table_name in t == False:
+					table_name = input("erreur de synthaxe veuillez reecrire le nom de la table :")
+				else:
 
-            
+					if dbh.is3nf(table_name) == False:
+						c = input("votre schema n est pas en 3nf donc ne sera pas en BCNF voulez vous faire une decomposition? Y/N")
+						if verif == "Y" or verif == "y":
+							print("la decomposition en 3nf serait : "+ getDecomposition3nf())
+							d = input("la decomposition en BCNF serait : "+ getDecompositionBcnf())
+							main_menu()
+						elif verif == "N" or verif == "n":
+							analyse()
+						else:
+							print("erreur synthaxe")
+							analyse()
+
+					else:
+
+						if dbh.isBcnf(table_name):
+							bcnf = input("votre schema est en BCNF")
+							main_menu()
+						else:
+							not_bcnf = input("votre schema est en 3nf mais n est pas en BCNF voulez vous faire une decomposition en BCNF? (Y/N) :")
+							analyse()
+							
 
 
 
-            else:
-                error_int=input("le nombre n est pas valide")
-                analyse()
-                
-        
+
+
+			elif option == 5:
+				main_menu()
+
+
+			else:
+				error_int=input("le nombre n est pas valide")
+				analyse()
 
 
 
-        except ValueError:
-            except_error=input("invalid syntax, try again")
+
+		except ValueError:
+			except_error=input("invalid syntax, try again")
 
 
 
@@ -419,7 +420,7 @@ def onclose():
 
 atexit.register(onclose)
 
-
+os.system('cls' if os.name =='nt' else 'clear')
 print("##################################")
 print("##################################")
 print("#    #  #####  #      #      #####")

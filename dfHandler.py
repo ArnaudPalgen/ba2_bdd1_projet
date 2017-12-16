@@ -124,7 +124,7 @@ class DfHandler():
 		allLhs=self.dbh.getAllLhs(table)
 		allAttributs=self.dbh.getTableAttribute(table)
 		for lhs in allLhs:
-			lhsTab=lhs[0].split()
+			lhsTab=lhs.split()
 			for attribute in allAttributs:
 				if attribute not in lhsTab:
 					if not self.isLogicConsequence(table, lhs, attribute):
@@ -147,30 +147,38 @@ class DfHandler():
 			return False
 
 	def prem3NF(self,table):
-		tabCle = self.getCle(table)
-		tabAttr = self.dbh.getTableAttribute(table)
-		for i in range(0,len(tabAttr)):
-			attr= tabAttr[i]
-			for j in range(0,len(tabCle)):
-				cle = tabCle[j]
-				for h in range(0,len(cle)):
-					indice = cle[h]
-					if indice == attr:
-						i += 1
-					else:
-						j += 1
-				j += 1
-			return False
-		return True
+		# tabCle = self.getCle(table) #tableau de tableau
+		# tabAttr = self.dbh.getTableAttribute(table) #tableau avec chaque attribut
+		# for i in range(0,len(tabAttr)):
+		# 	attr= tabAttr[i]  #un attribut en position i dans la table avec tous les attributs
+		# 	for j in range(0,len(tabCle)):
+		# 		cle = tabCle[j]  #une clé en position j dans la table contenant les clés
+		# 		for h in range(0,len(cle)):
+		# 			indice = cle[h]  #un elem de cle
+		# 			if indice == attr:
+		# 				i += 1
+		# 			else:
+		# 				j += 1
+		# 		j += 1
+		# 	return False
+		# return True
+
+		attribute = self.dbh.getTableAttribute(table)
+		cles = self.getCle(table)
+		for att in attribute:
+			for cle in cles:
+				if att in cle:
+					# print(att)
+					# print(cle)
+					return True
+		return False
 
 	def lhs3NF(self,table):
 		tabLhs = self.dbh.getAllLhs(table)
 		tabCle = self.getCle(table)
 		for i in range(0,len(tabLhs)):
 			lhs=tabLhs[i]
-			if lhs.split() in tabCle:
-				i += 1
-			else:
+			if lhs.split() not in tabCle:
 				return False
 		return True
 
@@ -184,15 +192,15 @@ class DfHandler():
 		return never
 
 
-	def __iterIsFinish(self, ligne, nbrAttribute):
+	def __canContinue(self, ligne, nbrAttribute):
 		if len(ligne)==0:
 			return True
 		for cle in ligne:
-			#pas continuer cad return false
-			# pas continuer quand pour toute cle j'ai \n ou j'ai tous les attributs
-			if '\n' not in cle and nbrAttribute != len(cle):
-				return True
-		return False
+
+			if len(cle)>=nbrAttribute:
+				return False
+
+		return True
 
 	def __exept(self,A,B):
 		"""
@@ -212,95 +220,112 @@ class DfHandler():
 		att.sort()
 
 		return result == att
+	def sansBacN(self, s):
+		s2=copy.deepcopy(s)
+		if '\n' in s2:
+			s2.remove('\n')
+		return s2
+	def canAddToCle(self, cles, item):
+		for cle in cles:
+			if self.__isIn(cle, item):
+				return False
+		return True
 
-
-	def __recurseCle(self, attribute, cles, table, debug):
-		#print(attribute)
-		#print(cles)
-		#print(self.__iterIsFinish(cles, len(attribute)))
-		#print(len(attribute))
-		if not self.__iterIsFinish(cles, len(attribute)):
-			#print('cles finale: '+ str(cles))
-			return cles
-
-		newLine=[]
-		
-		if len(cles)==0:
-			#print("here2")
-			newLine=[self.__getAttributeNeverInRhs(table)]
-			#print('toto '+ str(newLine))
-			if len(newLine[0])==0 :
-				newLine[0].append(attribute[0])
-			if self.isAKey(newLine[0], attribute, table):
-				#print('toto 1B'+ str(newLine))
-				#print('isAKey 1')
-				newLine[0].append('\n')
-				#print('toto2 '+ str(newLine))
+	def __recurseCle(self, attribute, cles, supercle, table, debug):
+		#print('-----------------------------v')
+		#print('in: '+str(supercle))
+		if (not self.__canContinue(cles, len(attribute))) or (not self.__canContinue(supercle, len(attribute))):
+			return cles, supercle
 
 		
+		if len(cles)==0 and len(supercle)==0:
+			#print('here1')
+			newLine=self.__getAttributeNeverInRhs(table)
+			newLine.sort()
+			if len(newLine)==0 :
+				for i in range(0, len(attribute)):
+					it=[attribute[i]]
+					it.sort()
+					if self.isAKey(it,attribute, table) and self.canAddToCle(cles,[it]):
+						if it not in supercle:
+							cles.append(it)
+					if newLine not in supercle:
+						supercle.append(it)
+			else:
+				if self.isAKey(newLine,attribute, table) and self.canAddToCle(cles, [newLine]) and newLine not in cles:
+					cles.append(newLine)
+				if newLine not in supercle:
+					supercle.append(newLine)
+			return self.__recurseCle(attribute, cles, supercle, table, debug)
+		
 
-		else:#TODO regarder dessous
-			#print("here3")
-			for item in cles:# pour chaque candidate cle
-				if '\n' in item or len(item)==len(attribute):
-					newLine.append(item)
-				#verifier que la branche ne contient pas le caractere de fin
-				#attribut sauf item
-				else:
-					rajout=self.__exept(attribute, item)
-					for itemToAdd in rajout:
-						new=[itemToAdd]
-						new.extend(item)
-						if self.isAKey(new, attribute, table):
-							#print('isKey 2')
-							new.append('\n')
-						newLine.append(new)
-		print("------------------------------------------------------")
-		print(newLine)
-		print("------------------------------------------------------\n")
+		else:
+			newSuperCle=[]
+			#print('here2')
+			for item in supercle:
+				rajout=self.__exept(attribute, item)
+				for itemToAdd in rajout:
+					new=[itemToAdd]
+					new.extend(item)
+					new.sort()
+					if self.isAKey(new,attribute, table) and self.canAddToCle(cles, new) and new not in cles:
+						cles.append(new)
+					if new not in newSuperCle:
+						newSuperCle.append(new)
+				#print(item)
+				if self.isAKey(item, attribute, table) and item not in newSuperCle:
+					#print('remove')
+					newSuperCle.append(item)
+			return self.__recurseCle(attribute, cles, newSuperCle, table, debug)
+
 		debug+=1
-		if debug==1000000000000000000000000000000000000000000000000000000:
+		if debug==100000000000000000000000000000000000000000000:
 			exit()
-		return self.__recurseCle(attribute, newLine, table, debug)
-
+		#print('out: '+str(supercle))
+		#print('-------------------------------------------------------------------------------^')
+		
 
 	def getCle(self, table):
-		result=self.getSuperKeyAndKey(table)
-		return result[0]
+		#result=self.getSuperKeyAndKey(table)
+		cles,supercle=self.__recurseCle(self.dbh.getTableAttribute(table), [], [], table, 0)
+		return cles
+
 	def getSuperCle(self, table):
-		result=self.getSuperKeyAndKey(table)
-		return result[1]
-	def cleanKey(self, keys):
-		for key in keys:
-			key.remove('\n')
+		cles,supercle=self.__recurseCle(self.dbh.getTableAttribute(table), [], [], table, 0)
+		return supercle
 
-	def getSuperKeyAndKey(self, table):
-		inCle=[]
-		attribute=self.dbh.getTableAttribute(table)
-		debug=0
-		keyAndSuperKey=self.__recurseCle(attribute, inCle, table, debug)
-		keyAndSuperKey.append('XX')
+	# def cleanKey(self, keys):
+	# 	for key in keys:
+	# 		if '\n' in key:
+	# 			key.remove('\n')
 
-		key=[]
-		superKey=[]
-		while len(keyAndSuperKey)>1:
-			cle=keyAndSuperKey.pop(0)
-			key.append(cle)
-			index=0
-			item=keyAndSuperKey[index]
-			while item != 'XX' :
-				if self.__isIn(cle, item ):
-					keyAndSuperKey.remove(item)
-					superKey.append(item)
-					item=keyAndSuperKey[index]
+	# def getSuperKeyAndKey(self, table):
+	# 	attribute=self.dbh.getTableAttribute(table)
+	# 	keyAndSuperKey=self.__recurseCle(attribute, [],[], table, 0)
+	# 	keyAndSuperKey.sort(key=len)
+	# 	print(keyAndSuperKey)
+	# 	keyAndSuperKey.append('XX')
 
-				else:
-					index+=1
-					item=keyAndSuperKey[index]
+	# 	key=[]
+	# 	superKey=[]
+	# 	while len(keyAndSuperKey)>1:
+	# 		cle=keyAndSuperKey.pop(0)
+	# 		key.append(cle)
+	# 		index=0
+	# 		item=keyAndSuperKey[index]
+	# 		while item != 'XX' :
+	# 			if self.__isIn(cle, item ):
+	# 				keyAndSuperKey.remove(item)
+	# 				superKey.append(item)
+	# 				item=keyAndSuperKey[index]
 
-		self.cleanKey(key)
-		self.cleanKey(superKey)
-		return key,superKey
+	# 			else:
+	# 				index+=1
+	# 				item=keyAndSuperKey[index]
+
+	# 	self.cleanKey(key)
+	# 	self.cleanKey(superKey)
+	# 	return key,superKey
 
 	def getDecomposition3nf(self):
 		pass
@@ -322,9 +347,9 @@ class DfHandler():
 			ens=self.dbh.getDepByRelation(table)
 			ens.remove([table,lhs,rhs])
 			result=self.__doFermeture(ens,lhs.split())
-			print('in consequence')
-			print(result)
-			print(rhs)
+			# print('in consequence')
+			# print(result)
+			# print(rhs)
 
 			return rhs in result
 		else:
