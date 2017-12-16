@@ -2,7 +2,7 @@ from dfHandler import *
 from DataBaseHandler import *
 import os
 import atexit
-
+#TODO que retourne isLogicConsequence?
 
 dbh = None
 
@@ -232,8 +232,8 @@ def analyse():
 						error_int=input("error integer")
 						analyse()
 					else:
-						if dbh.isLogicConsequence(tableau[nbre -1][0],tableau[nbre -1][1],tableau[nbre -1][2]):
-							print_LC_OK = input("votre dependance est bien une consequence logique")
+						if dbh.isLogicConsequence(tableau[nbre -1][0],tableau[nbre -1][1],tableau[nbre -1][2]) != None:
+							print_LC_OK = input(tableau[nbre -1][0]+" -->"+tableau[nbre -1][2]+ " est bien une consequence logique")
 							analyse()
 						else:
 							print_LC_NOT = input("votre dependance n'est pas une consequence logique")
