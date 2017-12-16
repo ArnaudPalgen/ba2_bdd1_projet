@@ -128,7 +128,6 @@ class DfHandler():
 			for attribute in allAttributs:
 				if attribute not in lhsTab:
 					if not self.isLogicConsequence(table, lhs, attribute):
-
 						return False
 		return True
 
