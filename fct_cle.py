@@ -97,3 +97,20 @@ def lhs3Nf(self,table):
 		else:
 			return False
 	return True
+
+
+
+def sortDep(self, table):
+	df=self.dbh.getDepByRelation(table)
+	for dep in df:
+		dep.pop(0)
+	df.sort()
+
+
+def delinutile(self,table):
+	df=self.dbh.getDepByRelation(table)
+	for dep in df:
+		if isLogicConsequence(table, dep[1],dep[2]) != None:
+			removeDep(table,dep[1],dep[2])
+		if satisfaitPasDF(self, table, dep[1], dep[2]) != None:
+			removeDep(table,dep[1],dep[2])

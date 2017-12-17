@@ -2,6 +2,7 @@
 from DataBaseHandler import DataBaseHandler
 import logging
 import copy
+#TODO verifier isLogicConsequence
 #TODO mettre un s a exist
 #TODO demander consequence logique. tout sauf celle donee ?
 #logging.basicConfig(filename='logs/log1.log',level=logging.DEBUG,\
@@ -136,6 +137,10 @@ class DfHandler():
 		retourne tous les noms de tables presentes dans la table FuncDep
 		"""
 		return self.dbh.getAllTableInFuncDep()
+
+	def getDepByRelation(self,relation):
+
+		return self.dbh.getDepByRelation(relation)
 
 	def is3nf(self, table):
 		#print("3nf premier: "+str(self.prem3NF(table)))
@@ -328,8 +333,13 @@ class DfHandler():
 
 	def getDecomposition3nf(self):
 		pass
-	def getDecompositionBcnf(self):
-		pass
+
+	def sortDep(self, table):
+		df=self.dbh.getDepByRelation(table)
+		for dep in df:
+			dep.pop(0)
+		df.sort()
+
 	def satisfaitPasDF(self, table, lhs, rhs):
 		if self.__depExist(table, lhs, rhs):
 			return self.dbh.DFisOk(table, lhs, rhs)
