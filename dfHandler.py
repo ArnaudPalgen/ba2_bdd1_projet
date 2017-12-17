@@ -332,6 +332,41 @@ class DfHandler():
 	# 	self.cleanKey(superKey)
 	# 	return key,superKey
 
+	def getCouvertureMinimale(self, table):
+		deps=self.dbh.getDepByRelation(table)
+		newDeps=[]
+		
+		#2
+		#pour chaque df fermeture( toute les df, et une partie du lhs de la df)
+		#si femeture == lhs (selectionnee) on peut la reduire a ça
+		# si non on essaye une autre partie du lhs 
+		# si tout essayé on peut pas reduire
+
+		for df in deps:
+			lhs=df[1].split()
+			if len(lhs)==1:
+				newDeps.append(df)
+			else:
+				canReplace=None
+				for att in lhs:
+					fermeture=self.__doFermeture(deps,lhs)
+
+					if fermeture==[att]:
+						canReplace=att
+						break
+				if canReplace != None:
+					newDeps.append([df[0], canReplace, df[2]])
+				else:
+					newDeps.append(df)
+
+		#3
+		deps=newDeps
+		newDeps=[]
+		for dep in deps:
+			if not self.isLogicConsequence(dep[0], dep[1], dep[2]):# si elle n'est pas redondante
+				newDeps.append(dep)#on l'ajoute a la couverture minimale
+		return newDeps
+
 	def getDecomposition3nf(self, table):
 		deps=self.dbh.getDepByRelation(table)
 		cles=self.getCle(table)
