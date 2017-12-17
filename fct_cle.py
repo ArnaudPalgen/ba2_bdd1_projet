@@ -114,3 +114,71 @@ def delinutile(self,table):
 			removeDep(table,dep[1],dep[2])
 		if satisfaitPasDF(self, table, dep[1], dep[2]) != None:
 			removeDep(table,dep[1],dep[2])
+
+
+def getDecomp3NF(self, table):
+	#entre un tableau de tableau ou chaque tableau est une df
+	#gerer dernier elem 
+	tabcle = self.getcle(table)
+	tabcle.sort(key=len)
+	tablecouv = self.getCouvertureMinimale(table)
+	cleanTable= self.cleanDep(tablecouv)
+	cleantable.sort()
+	newtable = []
+	tableprov = []
+	
+	tableprov.append(cleanTable[0])
+	cleanTable.remove(0)
+	for df in cleanTable:
+		if df[0] == tableprov[0][0]:
+			tableprov.append(df)
+		else:
+			newtable.append(tableprov)
+			tableprov = []
+			tableprov.append(df)
+	newtable.append(tableprov)
+	print("newTable: "+str(newtable))
+	
+	tablefus = []
+	tableprov = []
+	for groupe in newtable:
+		tableprov.append(groupe[0][0])
+		tableprov.append("/")
+		for df in groupe:
+			tableprov.append(df[1])
+		tablefus.append(tableprov)
+	print("tableau fusion : "+str(tablefus))
+	
+	
+
+	for rel in tablefus:
+		tabtestcle = []
+		i = 0
+		while rel[i] != "/":
+			tabtestcle.append(rel[i])
+		for cle in tabcle:
+			if cle == tabtestcle:
+				return tablefus
+	tableprov =[]
+	tableprov.append(tabcle[len(tabcle-1)].pop(0))
+	tableprov.append("/")
+	tableprov.extend(tabcle[len(tabcle-1)])
+	tablefus.append(tableprov)
+	print("table final: "+str(tablefus))
+	return tablefus
+
+	
+
+
+
+
+
+
+
+
+def cleanDep(self, table):
+	newtable = []
+	for df in table:
+		newtable.append(df[1])
+		newtable.append(df[2])
+	return newtable

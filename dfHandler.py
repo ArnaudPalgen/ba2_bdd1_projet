@@ -368,29 +368,122 @@ class DfHandler():
 		return newDeps
 
 	def getDecomposition3nf(self, table):
-		deps=self.dbh.getDepByRelation(table)
-		cles=self.getCle(table)
-		table=[]
-		newTable=[]
-		for dep in deps:
-			cleanDep=dep[1].split()
-			cleanDep.append(dep[2])
-			if cleanDep not in table:
-				table.append(cleanDep)
-		for cle in cles:
-			if cle not in table:
-				table.append(cle)
-		table.sort(key=len)
-		print(table)
-		while len(table)>0:
-			elem=table.pop(0)
-			isInclude=False
-			for item in table:
-				if len(item)>len(elem) and self.__isIn(elem, item):
-					isInclude=True
+
+		tabcle = self.getCle(table)
+		tabcle.sort(key=len)
+		#print(str(tabcle))
+		tablecouv = self.getCouvertureMinimale(table)
+		#print("base :"+str(tablecouv))
+		cleanTable= self.cleanDep(tablecouv)
+		#print("clean :"+str(tablecouv))
+		cleanTable.sort()
+
+		newtable = []
+		tableprov = []
+		#print("trie: "+str(tablecouv))
+		
+		tableprov.append(cleanTable[0])
+		cleanTable.pop(0)
+		for df in cleanTable:
+			if df[0] == tableprov[0][0]:
+				tableprov.append(df)
+			else:
+				newtable.append(tableprov)
+				tableprov = []
+				tableprov.append(df)
+		newtable.append(tableprov)
+		#print("newTable: "+str(newtable))
+		
+		tablefus = []
+		tableprov = []
+		for groupe in newtable:
+			tableprov.append(groupe[0][0])
+			tableprov.append("-->")
+			for df in groupe:
+				tableprov.append(df[1])
+			tablefus.append(tableprov)
+			tableprov = []
+
+		#print("tableau fusion : "+str(tablefus))
+		
+		
+
+		for rel in tablefus:
+			tabtestcle = []
+			#print(str(rel)+"ggggggggg")
+			for elem in rel:
+				#print(str(elem)+"hhhhhhhhh")
+				if elem != '-->':
+					tabtestcle.append(elem)
+					#print(str(tabtestcle)+"test")
+					for cle in tabcle:
+						if cle[0] == tabtestcle[0]:
+							print(tablefus)
+							return tablefus
+				else:
 					break
-			if not isInclude:
-				newTable.append(elem)
+				tabtestcle =[]
+			
+		
+
+		tableprov =[]
+		relcle =tabcle[len(tabcle)-1]
+		if len(relcle) == 1:
+			tablefus.append(relcle)
+			print("table finals: "+str(tablefus))
+			return tablefus
+		else:
+			tableprov.append(relcle[0])
+			relcle.pop(0)
+			tableprov.append("/")
+			tableprov.append(relcle)
+			tablefus.append(tableprov)
+			print("table final: "+str(tablefus))
+			return tablefus
+
+
+	def cleanDep(self, table):
+		
+		for df in table:
+			df.pop(0)
+		return table
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+		# deps=self.dbh.getDepByRelation(table)
+		# cles=self.getCle(table)
+		# table=[]
+		# newTable=[]
+		# for dep in deps:
+		# 	cleanDep=dep[1].split()
+		# 	cleanDep.append(dep[2])
+		# 	if cleanDep not in table:
+		# 		table.append(cleanDep)
+		# for cle in cles:
+		# 	if cle not in table:
+		# 		table.append(cle)
+		# table.sort(key=len)
+		# print(table)
+		# while len(table)>0:
+		# 	elem=table.pop(0)
+		# 	isInclude=False
+		# 	for item in table:
+		# 		if len(item)>len(elem) and self.__isIn(elem, item):
+		# 			isInclude=True
+		# 			break
+		# 	if not isInclude:
+		# 		newTable.append(elem)
 
 
 		print('Decomposition 3nf:'+str(newTable))

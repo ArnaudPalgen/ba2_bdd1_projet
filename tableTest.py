@@ -4,7 +4,7 @@ from dfHandler import *
 
 dataBase='tableTest'
 var1=False
-var2=False
+var2=True
 #Table1---------------------------------------------------------------------------------------------------------------------------------------------------------------
 table1='lettre'
 
@@ -77,13 +77,16 @@ if var2:
 	#cursor.execute(""" INSERT INTO FuncDep('table', lhs, rhs) VALUES (?,?,?)""", (table2,'A','D'))
 	#cursor.execute(""" INSERT INTO FuncDep('table', lhs, rhs) VALUES (?,?,?)""", (table2,'A','E'))
 	#cursor.execute(""" INSERT INTO FuncDep('table', lhs, rhs) VALUES (?,?,?)""", (table2,'A','F'))
+	# cursor.execute("""INSERT INTO FuncDep('table', lhs, rhs) VALUES(?,?,?)""", (table2,'A','B'))
+	# cursor.execute("""INSERT INTO FuncDep('table', lhs, rhs) VALUES(?,?,?)""", (table2,'B C','D'))
+	# cursor.execute("""INSERT INTO FuncDep('table', lhs, rhs) VALUES(?,?,?)""", (table2,'A C','B'))
+	# cursor.execute("""INSERT INTO FuncDep('table', lhs, rhs) VALUES(?,?,?)""", (table2,'A C','D'))
+	# cursor.execute("""INSERT INTO FuncDep('table', lhs, rhs) VALUES(?,?,?)""", (table2,'A C','E'))
+	# cursor.execute("""INSERT INTO FuncDep('table', lhs, rhs) VALUES(?,?,?)""", (table2,'D','E'))
 	cursor.execute("""INSERT INTO FuncDep('table', lhs, rhs) VALUES(?,?,?)""", (table2,'A','B'))
-	cursor.execute("""INSERT INTO FuncDep('table', lhs, rhs) VALUES(?,?,?)""", (table2,'B C','D'))
-	cursor.execute("""INSERT INTO FuncDep('table', lhs, rhs) VALUES(?,?,?)""", (table2,'A C','B'))
-	cursor.execute("""INSERT INTO FuncDep('table', lhs, rhs) VALUES(?,?,?)""", (table2,'A C','D'))
-	cursor.execute("""INSERT INTO FuncDep('table', lhs, rhs) VALUES(?,?,?)""", (table2,'A C','E'))
-	cursor.execute("""INSERT INTO FuncDep('table', lhs, rhs) VALUES(?,?,?)""", (table2,'D','E'))
-
+	cursor.execute("""INSERT INTO FuncDep('table', lhs, rhs) VALUES(?,?,?)""", (table2,'A','C'))
+	cursor.execute("""INSERT INTO FuncDep('table', lhs, rhs) VALUES(?,?,?)""", (table2,'C D','E'))
+	cursor.execute("""INSERT INTO FuncDep('table', lhs, rhs) VALUES(?,?,?)""", (table2,'B','D'))
 
 	
 	db.commit()
@@ -105,4 +108,5 @@ handler=DfHandler(dataBase)
 # print('\n3 nf: '+str(troisNf2))
 # print('bcnf: '+(str(bcnf2)))
 # print('----------------------------------------------------------------------------------------------------------------\n')
-handler.getCouvertureMinimale(table2)
+#handler.getCouvertureMinimale(table2)
+handler.getDecomposition3nf(table2)
