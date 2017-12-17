@@ -170,12 +170,13 @@ class DfHandler():
 		attribute = self.dbh.getTableAttribute(table)
 		cles = self.getCle(table)
 		for att in attribute:
+			isInCle=False
 			for cle in cles:
 				if att in cle:
-					# print(att)
-					# print(cle)
-					return True
-		return False
+					isInCle=True
+			if not isInCle:
+				return False
+		return True
 
 	def lhs3NF(self,table):
 		tabLhs = self.dbh.getAllLhs(table)
@@ -331,24 +332,74 @@ class DfHandler():
 	# 	self.cleanKey(superKey)
 	# 	return key,superKey
 
-	def getDecomposition3nf(self):
-		pass
+	def getDecomposition3nf(self, table):
+		deps=self.dbh.getDepByRelation(table)
+		cles=self.getCle(table)
+		table=[]
+		newTable=[]
+		for dep in deps:
+			cleanDep=dep[1].split()
+			cleanDep.append(dep[2])
+			if cleanDep not in table:
+				table.append(cleanDep)
+		for cle in cles:
+			if cle not in table:
+				table.append(cle)
+		table.sort(key=len)
+		print(table)
+		while len(table)>0:
+			elem=table.pop(0)
+			isInclude=False
+			for item in table:
+				if len(item)>len(elem) and self.__isIn(elem, item):
+					isInclude=True
+					break
+			if not isInclude:
+				newTable.append(elem)
 
-	def sortDep(self, table):
-		df=self.dbh.getDepByRelation(table)
-		for dep in df:
-			dep.pop(0)
-		df.sort()
+
+		print('Decomposition 3nf:'+str(newTable))
+
+	def closeDataBase(self):
+		self.dbh.closeDataBase()
+
 
 	def satisfaitPasDF(self, table, lhs, rhs):
+		"""
+		retourne les lignes qui ne satisfont pas la df (table, lhs, rhs)
+		"""
 		if self.__depExist(table, lhs, rhs):
 			return self.dbh.DFisOk(table, lhs, rhs)
 		else:
 			return None
+	"""		
+	def getInutileDF(self, table, lhs, rhs):
 		
-	def getInutileDF(self):
-		pass
-	
+		#si table et lhs et rhs valent None, regarde pour une df
+		
+		notDf=[]
+		isConsequenceLogic=[]
+		pasRespectee=[]#[[table, lhs, rhs, [ligne qui ne respenctent pas la df]], [], [], ..., []]
+		if table==None and lhs==None and rhs == None:
+			allDf=dbh.getAllDep()
+			for dep in allDf:
+				if not self.__isDep(dep[0], dep[1], dep[2]):
+					notDf.append(dep)
+				elif self.isLogicConsequence(dep[0], dep[1], dep[2]):
+					logic.append(dep)
+				elif self.satisfaitPasDF(dep[0], dep[1], dep[2]) est non vide:#TODO
+					retour=self.satisfaitPasDF(dep[0], dep[1], dep[2])
+					tab=[dep, retour]
+					pasRespectee.append(tab)
+		elif table!= None and lhs!= None and rhs!= None:
+			if not self.__depExist(table, lhs, rhs):
+				notDf.append([table, lhs, rhs])
+			elif self.isLogicConsequence(table, lhs, rhs):
+				isConsequenceLogic.append([table, lhs, rhs])
+
+		return notDf, isLogicConsequence, pasRespectee
+	"""
+			
 
 	def isLogicConsequence(self,table, lhs, rhs):
 
@@ -356,9 +407,6 @@ class DfHandler():
 			ens=self.dbh.getDepByRelation(table)
 			ens.remove([table,lhs,rhs])
 			result=self.__doFermeture(ens,lhs.split())
-			# print('in consequence')
-			# print(result)
-			# print(rhs)
 
 			return rhs in result
 		else:
@@ -394,24 +442,16 @@ class DfHandler():
 		df=copy.deepcopy(dFs)
 		newDep=copy.deepcopy(x)
 		oldDep=None
-		#print('dfs: '+str(df))
-		#print('attributs: '+str(newDep))
 
 		while oldDep != newDep:
 			oldDep=copy.deepcopy(newDep)
 			for item in df:
 				w=item[1]
 				z=item[2]
-				# print('-----------------------------')
-				# print('w |'+w+'|')
-				# print('z '+ z)
-				# print('newDep: '+str(newDep))
-				# print('-----------------------------')
+
 				if self.__isIn(w.split(), newDep):
-					#print('w is in newDep')
 					if z not in newDep:
 						newDep.append(z)
-		#print('fin '+str(newDep))
 		return newDep
 
 	def __isIn(self,small, big):

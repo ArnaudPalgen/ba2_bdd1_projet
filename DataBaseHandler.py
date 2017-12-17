@@ -176,7 +176,10 @@ class DataBaseHandler:
 
 			
 		return retour
-	
+	def closeDataBase(self):
+		self.db.close()
+		cursor=None
+
 	def getAllDep(self):
 		""" 
 		Retourne toutes les DF de la table FuncDep
