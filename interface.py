@@ -2,28 +2,45 @@ from dfHandler import *
 from DataBaseHandler import *
 import os
 import atexit
-#TODO que retourne isLogicConsequence?
+#TODO suppression des df inutiles (option 3)
+#TODO retirer print dans getDecomposition3nf(dfHandler) apres le push
 
 dbh = None
 
 
 def add():
 
-    """fonction permettant l ajout de dependance fonctionelle"""
+	"""
+	fonction permettant l ajout de dependance fonctionelle
+	"""
 
-    cls()
-    print("rentrer les elements suivants :")
-    addTables = input("nom de la table : ")
-    addLhs = input("partie gauche de la dependance fonctionnelle(si vous avez plusieurs elements separez les par des espaces et non des virgules) : ")
-    addRhs = input("partie droite de la dependance fonctionnelle : ")
-    
-    dep=dbh.insertDep(addTables, addLhs, addRhs)
-    if dep == False:
-        error_add=input("votre dependance n'a pas pu etre ajoutee. Sorry :( (verifiez que la dependance n'existe pas deja ou a ete bien ecrite) ")
-        main_menu()
+	cls()
+	tableau = dbh.getAllDep()
 
-    print_dep=input("Votre dependance a bien ete ajoutee : "+ addLhs + "-->" +addRhs)
-    main_menu()
+	if len(tableau)== 0:
+		empty_table=input("la table FuncDep ne contient aucun element actuelement")
+		main_menu()
+	
+	else:
+		print("la table FuncDep contient les dependances suivantes: ")
+		
+		for line in tableau:
+			print("Table: "+line[0]+"  dependance fonctionnelle: "+line[1]+" --> "+line[2])
+	print("-----------------------------------------------")
+	print("rentrer les elements suivants :")
+	addTables = input("nom de la table : ")
+	print("partie gauche de la dependance fonctionnelle :")
+	addLhs = input("(si vous avez plusieurs elements separez les par des espaces et non des virgules) : ")
+	addRhs = input("partie droite de la dependance fonctionnelle : ")
+
+	dep=dbh.insertDep(addTables, addLhs, addRhs)
+
+	if dep == False:
+		error_add=input("votre dependance n'a pas pu etre ajoutee. Sorry :( (verifiez que la dependance n'existe pas deja ou a ete bien ecrite) ")
+		main_menu()
+
+	print_dep=input("Votre dependance a bien ete ajoutee : "+ addLhs + "-->" +addRhs)
+	main_menu()
 
 
 
@@ -31,152 +48,172 @@ def add():
 
 def edit():
 
-    """fonction permettant la modification de dependance fonctionelle"""
+	"""
+	fonction permettant la modification de dependance fonctionelle
+	"""
 
-    cls()
+	cls()
+	tableau = dbh.getAllDep()
 
-    tableau = dbh.getAllDep()
+	if len(tableau)== 0:
+		empty_table=input("la table FuncDep ne contient aucun element a modifier")
+		main_menu()
+	
+	else:
+		print("quelle ligne voulez-vous modifier?")
+		increment = 1
+		
+		for line in tableau:
+			print(str(increment)+".  Table: "+line[0]+"  dependance fonctionnelle: "+line[1]+" --> "+line[2])
+			increment  += 1
 
-    if len(tableau)== 0:
-        empty_table=input("la table ne contient aucun element a modifier")
-        main_menu()
-    else:
-        print("quelle ligne voulez-vous modifier?")
-        increment = 1
-        for line in tableau:
-            print(str(increment)+".  Table: "+line[0]+"  dependance fonctionnelle: "+line[1]+" --> "+line[2])
-            increment  += 1
-        
-        try:
-            num = input("numero de la ligne : ")
-            nbre = int(num)
-            if nbre > (len(tableau)) or nbre <= 0:
-                error_int=input("error integer")
-                edit()
-            else:
-                cls()
+		try:
+			num = input("numero de la ligne : ")
+			nbre = int(num)
+			
+			if nbre > (len(tableau)) or nbre <= 0:
+				error_int=input("error integer")
+				edit()
+			
+			else:
+				cls()
+				print("que voulez-vous modifier?")
+				print("1. table")
+				print("2. lhs")
+				print("3. rhs")
 
-                print("que voulez-vous modifier?")
-                print("1. table")
-                print("2. lhs")
-                print("3. rhs")
+				choice = input("entrez le nbre: ")
+				newnbre = int(choice)
+				new = input("rentrez les nouvelles donnees :")
 
-                choice = input("entrez le nbre: ")
-                newnbre = int(choice)
-                new = input("rentrez les nouvelles donnees :")
+				if newnbre == 1: 
+					retour=dbh.editDep(tableau[nbre -1][0],tableau[nbre -1][1],tableau[nbre -1][2],new, dbh.TABLE)
+					
+					if retour:
+						print("votre donnee a bien ete modifiee")
+						print_dep=input("la nouvelle dependance est :"+ new +" "+ tableau[nbre -1][1] + "-->" + tableau[nbre -1][2])
+						main_menu()
+					
+					else:
+						error_edit=input("une erreur est apparue lors de la modification de votre dependance")
+						main_menu()
+				
+				elif newnbre == 2:
+					retour=dbh.editDep(tableau[nbre -1][0],tableau[nbre -1][1],tableau[nbre -1][2],new, dbh.LHS)
+					
+					if retour:
+						print("votre donnee a bien ete modifiee")
+						print_dep=input("la nouvelle dependance est :"+ tableau[nbre -1][0] +" "+ new + "-->" + tableau[nbre -1][2])
+						main_menu()
+					
+					else:
+						error_edit=input("une erreur est apparue lors de la modification de votre dependance")
+						main_menu()
 
-                if newnbre == 1: 
-                    retour=dbh.editDep(tableau[nbre -1][0],tableau[nbre -1][1],tableau[nbre -1][2],new, dbh.TABLE)
-                    if retour:
+				elif newnbre == 3:
+					
+					if new.count(" ") != 0:
+						print("error syntax")
+						edit()
+					
+					else:
+						retour=dbh.editDep(tableau[nbre -1][0],tableau[nbre -1][1],tableau[nbre -1][2],new, dbh.RHS)
 
-                    	print("votre donnee a bien ete modifiee")
-                    	print_dep=input("la nouvelle dependance est :"+ new +" "+ tableau[nbre -1][1] + "-->" + tableau[nbre -1][2])
-                    	main_menu()
-                    else:
-                        error_edit=input("une erreur est apparue lors de la modification de votre dependance")
-                        main_menu()
-                elif newnbre == 2:
-                    newLhs=cleaning(new)
-                    retour=dbh.editDep(tableau[nbre -1][0],tableau[nbre -1][1],tableau[nbre -1][2],newLhs, dbh.LHS)
-                    if retour:
-                    	
-                        print("votre donnee a bien ete modifiee")
-                        print_dep=input("la nouvelle dependance est :"+ tableau[nbre -1][0] +" "+ new + "-->" + tableau[nbre -1][2])
-                        main_menu()
-                    else:
-                        error_edit=input("une erreur est apparue lors de la modification de votre dependance")
-                        main_menu()
+						if retour:
+							print("votre donnee a bien ete modifiee")
+							print_dep=input("la nouvelle dependance est :"+ tableau[nbre -1][0] +" "+ tableau[nbre -1][1] + "-->" + new)
+							main_menu()
+						
+						else:
+							error_edit=input("une erreur est apparue lors de la modification de votre dependance")
+							main_menu()
 
-                elif newnbre == 3:
-                    if new.count(" ") != 0:
-                        print("error syntax")
-                        edit()
-                    else:
-                        retour=dbh.editDep(tableau[nbre -1][0],tableau[nbre -1][1],tableau[nbre -1][2],new, dbh.RHS)
-                        
-                        if retour:
-                            print("votre donnee a bien ete modifiee")
-                            print_dep=input("la nouvelle dependance est :"+ tableau[nbre -1][0] +" "+ tableau[nbre -1][1] + "-->" + new)
-                            main_menu()
-                        else:
-                            error_edit=input("une erreur est apparue lors de la modification de votre dependance")
-                            main_menu()
+				else:
+					error_int=input("error integer")
+					edit()
 
-                else:
-                    error_int=input("error integer")
-                    edit()
-                
+		except ValueError:
+			except_error=input("invalid syntax, try again")
+			edit()
 
-        except ValueError:
-            except_error=input("invalid syntax, try again")
-            edit()
 
-            
 
 
 
 def delete():
 
-    """fonction de suppression de dependance"""
+	"""
+	fonctionpermettant la suppression de dependance
+	"""
 
-    cls()
+	cls()
+	tableau = dbh.getAllDep() 
+	
+	if len(tableau)== 0:
+		empty_table=input("la table FuncDep ne contient aucun element a supprimer")
+		main_menu()
 
-    tableau = dbh.getAllDep() 
-    if len(tableau)== 0:
-        empty_table=input("la table ne contient aucun element a supprimer")
-        main_menu()
+	else:
+		print("quelle ligne voulez-vous supprimer?")
+		increment = 1
+		
+		for line in tableau:
+			print(str(increment)+".  Table: "+line[0]+"  dependance fonctionnelle :"+line[1]+" --> "+line[2])
+			increment += 1
 
-    else:
-        print("quelle ligne voulez-vous supprimer?")
-        increment = 1
-        for line in tableau:
-            print(str(increment)+".  Table: "+line[0]+"  dependance fonctionnelle :"+line[1]+" --> "+line[2])
-            increment += 1
+		try: 
+			num = input("numero de la ligne : ")
+			nbre = int(num)
 
-        try: 
-            num = input("numero de la ligne : ")
-            nbre = int(num)
+			if nbre > (len(tableau)) or nbre <= 0:
+				error_int=input("error integer")
+				delete()
 
-            if nbre > (len(tableau)) or nbre <= 0:
-                error_int=input("error integer")
-                delete()
-
-            else:
-                cls()
-
-                verif = input("la suppression est definitive voulez-vous vraiment continuer?(Y/N)")
-                if verif == "Y" or verif == "y":
-                    if dbh.removeDep(tableau[nbre -1][0],tableau[nbre -1][1],tableau[nbre -1][2]):
-                        print_dep=input("la dependance "+ tableau[nbre -1][1]+"-->"+tableau[nbre -1][2]+" venant de la table "+tableau[nbre -1][0]+" a bien ete supprimee")
-                        main_menu()
-                    else:
-                        error_del=input("une erreur c est produite pendant l'operation")
-                        delete()
-                elif verif == "N" or verif == "n":
-                    main_menu()
-                else:
-                    error_synth=input("erreur synthaxe")
-                    delete()
-        except ValueError:
-            except_error=input("invalid syntax, try again")
-            delete()
+			else:
+				cls()
+				verif = input("la suppression est definitive voulez-vous vraiment continuer?(Y/N)")
+				
+				if verif == "Y" or verif == "y":
+					
+					if dbh.removeDep(tableau[nbre -1][0],tableau[nbre -1][1],tableau[nbre -1][2]):
+						print_dep=input("la dependance "+ tableau[nbre -1][1]+"-->"+tableau[nbre -1][2]+" venant de la table "+tableau[nbre -1][0]+" a bien ete supprimee")
+						main_menu()
+					
+					else:
+						error_del=input("une erreur c est produite pendant l'operation")
+						delete()
+				
+				elif verif == "N" or verif == "n":
+					main_menu()
+				
+				else:
+					error_synth=input("erreur synthaxe")
+					delete()
+		
+		except ValueError:
+			except_error=input("invalid syntax, try again")
+			delete()
 
 
 
 
 
 def analyse():
+	
 	"""
-    option d analyse
-    """
+	fonction contenant les differentes option d analyse de df/ de tables
+	"""
+	
 	cls()
 	tableau = dbh.getAllDep() #ajout de getAllDep à dfHandler
+	
 	if len(tableau)== 0:
-		empty_table=input("la table ne contient aucun element a analyser")
+		empty_table=input("option analyse temporairement indisponible car la table FuncDep est vide")
 		main_menu()
+	
 	else:
+		
 		try:
-
 			print("que voulez-vous faire?")
 			print("1. determiner les cles et supercles d'un schema")
 			print("2. determiner les consequences logiques")
@@ -187,28 +224,39 @@ def analyse():
 			option = int(nbre)
 
 			if option ==1:
+				
 				try:
-
+					cls()
 					print("quelle table voulez-vous determiner?")
+					print("-----------------------------------------------")
 					t= dbh.getAllTableInFuncDep()
+					
 					for i in t:
 						print(i)
+					print("-----------------------------------------------")
 					table_name=input("entrez le nom de la table: ")
+					
 					if table_name in t == False:
-						table_name = input("erreur de synthaxe veuillez reecrire le nom de la table :")
+						table_name = input("erreur de synthaxe veuillez reecrire le nom de la table : ")
+					
 					else:
-
-						choice=input("voulez vous les cles(1) ou les supercles(2)?")
+						choice=input("voulez vous les cles(1) ou les supercles(2)? : ")
 						cle=int(choice)
+						
 						if cle ==1:
-							cle=input(dbh.getCle(table_name))
+							cls()
+							cle=input("les cles de la table "+table_name+" sont : "+str(dbh.getCle(table_name)))
 							main_menu()
+						
 						elif cle == 2:
-							supercle=input(dbh.getSuperCle(table_name))
+							cls()
+							supercle=input("les supercles de la table "+table_name+" sont : "+str(dbh.getSuperCle(table_name)))
 							main_menu()
+						
 						else:
 							error_int=input("error integer")
 							analyse()
+				
 				except ValueError:
 					except_error = input("invalid syntax")
 					analyse()
@@ -218,12 +266,13 @@ def analyse():
 
 
 			elif option == 2:
-
 				cls()
 				increment =1
+				
 				for line in tableau:
 					print(str(increment)+".  Table: "+line[0]+" dependance fonctionnelle :"+line[1]+" --> "+line[2])
 					increment +=1
+				
 				try:
 					num= input("numero de la dependance a analyser :")
 					nbre = int(num)
@@ -231,13 +280,17 @@ def analyse():
 					if nbre > (len(tableau)) or nbre <= 0:
 						error_int=input("error integer")
 						analyse()
+					
 					else:
-						if dbh.isLogicConsequence(tableau[nbre -1][0],tableau[nbre -1][1],tableau[nbre -1][2]) != None:
+						
+						if dbh.isLogicConsequence(tableau[nbre -1][0],tableau[nbre -1][1],tableau[nbre -1][2]):
 							print_LC_OK = input(tableau[nbre -1][0]+" -->"+tableau[nbre -1][2]+ " est bien une consequence logique")
 							analyse()
+						
 						else:
 							print_LC_NOT = input("votre dependance n'est pas une consequence logique")
 							analyse()
+				
 				except ValueError:
 					except_error=input("invalid syntax, try again")
 					analyse()
@@ -246,16 +299,23 @@ def analyse():
 
 
 
-			elif option == 3:
+			elif option == 3: #a finir
+				cls()
 				print("quelle table voulez-vous determiner?")
+				print("-----------------------------------------------")
 				t= dbh.getAllTableInFuncDep()
+				
 				for i in t:
 					print(i)
+				print("-----------------------------------------------")
 				table_name=input("entrez le nom de la table: ")
+				
 				if table_name in t == False:
 					table_name = input("erreur de synthaxe veuillez reecrire le nom de la table :")
+				
 				else:
 					df = dbh.getDepByRelation(table_name)
+					
 					for dep in df:
 						print(dbh.satisfaitPasDF(table_name,dep[1],dep[2]))
 					a = input("voila les df non satisfaite")
@@ -265,38 +325,46 @@ def analyse():
 
 
 
-			elif option == 4:
+			elif option == 4: 
+				cls()
 				print("quelle table voulez-vous determiner?")
-				t= dbh.getAllTableInFuncDep()
-				for i in t:
-					print(i)
+				print("-----------------------------------------------")
+				tableall= dbh.getAllTableInFuncDep()
+				
+				for table in tableall:
+					print(table)
+				print("-----------------------------------------------")
 				table_name=input("entrez le nom de la table: ")
-				if table_name in t == False:
+				
+				if table_name in tableall == False:
 					table_name = input("erreur de synthaxe veuillez reecrire le nom de la table :")
+				
 				else:
 
 					if dbh.is3nf(table_name) == False:
-						c = input("votre schema n est pas en 3nf donc ne sera pas en BCNF voulez vous faire une decomposition? Y/N")
-						if verif == "Y" or verif == "y":
-							print("la decomposition en 3nf serait : "+ getDecomposition3nf())
-							d = input("la decomposition en BCNF serait : "+ getDecompositionBcnf())
+						not3NF = input("votre schema n est pas en 3nf donc ne sera pas en BCNF voulez vous faire une decomposition 3NF de votre table? (Y/N) : ")
+						
+						if not3NF == "Y" or not3NF == "y":
+							decomp=input("la decomposition en 3nf serait : "+ str(dbh.getDecomposition3nf(table_name)))
 							main_menu()
-						elif verif == "N" or verif == "n":
+						
+						elif not3NF == "N" or not3NF == "n":
 							analyse()
+						
 						else:
 							print("erreur synthaxe")
 							analyse()
 
 					else:
-
+						
 						if dbh.isBcnf(table_name):
 							bcnf = input("votre schema est en BCNF")
 							main_menu()
+						
 						else:
-							not_bcnf = input("votre schema est en 3nf mais n est pas en BCNF voulez vous faire une decomposition en BCNF? (Y/N) :")
+							not_bcnf = input("votre schema est en 3nf mais n est pas en BCNF")
 							analyse()
 							
-
 
 
 
@@ -305,9 +373,13 @@ def analyse():
 				main_menu()
 
 
+
+
+
 			else:
 				error_int=input("le nombre n est pas valide")
 				analyse()
+
 
 
 
@@ -321,54 +393,67 @@ def analyse():
 
 def main_menu():
 
-    """fonction menu de base du programme"""
-    cls()
-    print("Veuillez choisir votre fonctionnalite :")
-    print("1. ajouter une dependance")
-    print("2. modifier une dependance")
-    print("3. supprimer une dependance")
-    print("4. analyser des dependances")
-    print("5. changer de base de donnee")
-    print("6. visionner vos dependances fonctionnelles")
-    print("7. quitter l'application")
+	"""
+	fonction contenant le menu principal de l'application
+	"""
 
-    try:
-        choice = input("entrez le nombre : ")
-        fonctio = int(choice)
+	cls()
+	print("Veuillez choisir votre fonctionnalite :")
+	print("1. ajouter une dependance")
+	print("2. modifier une dependance")
+	print("3. supprimer une dependance")
+	print("4. analyser des dependances")
+	print("5. changer de base de donnee")
+	print("6. visionner vos dependances fonctionnelles")
+	print("7. quitter l'application")
 
-        if fonctio == 1:
-            add()
-        elif fonctio == 2:
-            edit()
-        elif fonctio == 3:
-            delete()
-        elif fonctio == 4:
-            analyse()
-        elif fonctio == 5:
-            cls()
-            init()
-        elif fonctio == 6:
-        	cls()
-        	tableau = dbh.getAllDep()
-        	if len(tableau) == 0:
-        		empty_table=input("vous n'avez pas encore de dependances fonctionnelles")
-        		main_menu()
+	try:
+		choice = input("entrez le nombre : ")
+		fonctio = int(choice)
 
-        	else:
-        		increment = 1
-        		for line in tableau:
-        			print(str(increment)+".  Table: "+line[0]+"  dependance fonctionnelle : "+line[1]+"-->"+line[2])
-        			increment += 1
-        		back=input("retour au menu principal")
-        		main_menu()
-        elif fonctio == 7:
-            exit()
-        else:
-            error_int=input("invalid number, try again")
-            main_menu()
-    except ValueError:
-        except_error=input("invalid syntax, try again")
-        main_menu()
+		if fonctio == 1:
+			add()
+		
+		elif fonctio == 2:
+			edit()
+		
+		elif fonctio == 3:
+			delete()
+		
+		elif fonctio == 4:
+			analyse()
+		
+		elif fonctio == 5:
+			cls()
+			init()
+		
+		elif fonctio == 6:
+			cls()
+			tableau = dbh.getAllDep()
+			
+			if len(tableau) == 0:
+				empty_table=input("vous n'avez pas encore de dependances fonctionnelles")
+				main_menu()
+
+			else:
+				increment = 1
+
+				for line in tableau:
+					print(str(increment)+".  Table: "+line[0]+"  dependance fonctionnelle : "+line[1]+"-->"+line[2])
+					increment += 1
+				back=input("retour au menu principal")
+				main_menu()
+
+		elif fonctio == 7:
+			exit()
+
+		else:
+			error_int=input("invalid number, try again")
+			main_menu()
+
+	except ValueError:
+		except_error=input("invalid syntax, try again")
+		main_menu()
 
 
 
@@ -376,59 +461,51 @@ def main_menu():
 
 def init():
 
-    """ fonction pour l insertion de la base de donnee"""
-    
-    
-    bdd=input("inserer la base de donnee:")
-    global dbh
-    dbh = DfHandler(bdd)
-    main_menu()
+	"""
+	fonction initiale permettant de choisir la base de donnee
+	"""
+
+
+	bdd=input("inserer la base de donnee:")
+	global dbh
+	dbh = DfHandler(bdd)
+	main_menu()
 
 
 
 
 
 def cls():
-    
-    """ fonction de clean d ecran """
-    
-    os.system('cls' if os.name =='nt' else 'clear')
 
-"""
-def cleaning(x):
+	""" 
+	fonction de nettoyage d ecran
+	"""
 
-
-    if x[0] == " ":
-        x[1:]
-        cleaning(x)
-    if x[len(x)-1] ==  " ":
-        x.pop()
-        cleaning(x)
+	os.system('cls' if os.name =='nt' else 'clear')
 
 
-    for i in range(0,len(x)):
-        if x[i] ==',' and x[i+1] == ' ':
-            x[0:i]+x[i+1:]
-            i+=2
-        elif x[i] ==',' and x[i+1] !=' ':
-            x.replace(i,',',' ')
-            i+=1
-        else:
-            i+=1
 
-    return x
-"""
+
 
 def onclose():
-    print("###############################################")
-    print("###############################################")
-    print("##### #####  #####  ####   ####   #    #  #####")
-    print("#     #   #  #   #  #   #  #   #   #  #   #    ")
-    print("#  ## #   #  #   #  #   #  ####     ##    #####")
-    print("#  #  #   #  #   #  #   #  #   #    ##    #    ")
-    print("####  #####  #####  ####   ####     ##    #####")
-    print("###############################################")
-    print("###############################################")
+	"""
+	fonction de fermeture d application
+	"""
+	dbh.closeDataBase()
+	os.system('cls' if os.name =='nt' else 'clear')
+	print("###############################################")
+	print("###############################################")
+	print("##### #####  #####  ####   ####   #    #  #####")
+	print("#     #   #  #   #  #   #  #   #   #  #   #    ")
+	print("#  ## #   #  #   #  #   #  ####     ##    #####")
+	print("#  #  #   #  #   #  #   #  #   #    ##    #    ")
+	print("####  #####  #####  ####   ####     ##    #####")
+	print("###############################################")
+	print("###############################################")
+
+
+
+
 
 atexit.register(onclose)
 
