@@ -418,7 +418,46 @@ def analyse():
 						
 						if not3NF == "Y" or not3NF == "y":
 							decomp=input("la decomposition en 3nf serait : "+ str(dbh.getDecomposition3nf(table_name)))
-							main_menu()
+
+							DataBase=input("voulez-vous creer une nouvelle base de donnee avec les decompositions? Y/N : ")
+
+							if DataBase == "N" or DataBase =="n":
+								notcreate = input("la nouvelle base de donnee n'as pas ete cree")
+								main_menu()
+
+							elif DataBase == "Y" or DataBase == "y":
+								cls()
+								name_DataBase = input("Veuillez entrer le nom de la nouvelle base de donnee : ")
+								print("voila les decompositions:")
+								print("-----------------------------------------------")
+								newDataBase =dbh.getDecomposition3nf(table_name)
+
+								for newtable in newDataBase:
+									print("nom provisoire de la table : "+newtable[0]+" qui a comme attribut : "+newtable[1]+" et comme df : "++newtable[2])
+								print("-----------------------------------------------")
+								
+
+								for i in range(0, len(newDataBase)):
+									
+									newTableName=input("veuillez modifier le nom provisoire de la table "+newDataBase[i][0]+" par celui de votre choix : ")
+									
+									if not newTableName == ||:
+										newDataBase[i][0] = newTableName
+										newDataBase[i][2][0] = newTableName
+								dbh.createNewData(name_DataBase,newDataBase)
+								
+								if dbh.createNewData(name_DataBase,newDataBase):
+									print("la nouvelle base de donnee a bien ete cree")
+									decomp = input("attention l'application continue a tourner sur l'ancienne base de donnee")
+									main_menu()
+								
+								else:
+									decomp_not= input("une erreur c'est produite lors de la creation de la nouvelle base de donnee")
+									main_menu()
+							
+							else:
+								print("erreur synthaxe")
+								analyse()
 						
 						elif not3NF == "N" or not3NF == "n":
 							analyse()
