@@ -168,6 +168,18 @@ def getDecomp3NF(self, table):
 	return tablefus
 
 	
+increment = 1
+print("ces df ne sont pas respectees car : ")
+print("la table ou les attributs n'existent plus : ")
+for line in getInutileDf()[0]:
+	print(str(increment)+".  Table: "+line[0]+"  dependance fonctionnelle: "+line[1]+" --> "+line[2])
+			increment  += 1
+print("-----------------------------------------------")
+print("ces df sont des consequences logique : ")
+for line in getInutileDf()[0]:
+	print(str(increment)+".  Table: "+line[0]+"  dependance fonctionnelle: "+line[1]+" --> "+line[2])
+			increment  += 1
+
 
 
 
@@ -182,3 +194,166 @@ def cleanDep(self, table):
 		newtable.append(df[1])
 		newtable.append(df[2])
 	return newtable
+
+
+
+
+
+
+print("que voulez-vous faire?")
+print("1. afficher et supprimer les df ayant la table ou un argument qui n'est plus existant")
+print("2. afficher et supprimer les df qui sont des consequences logiques")
+print("3. afficher et supprimer les df qui ne sont pas respectees")
+print("4. suppression de toutes les df inutiles")
+print("5. retour au menu analyse")
+
+try:
+	nbre = input("entrez le nbre: ")
+	option = int(nbre)
+		
+		if option <=3:
+			increment = 1
+			
+			for line in getInutileDf()[option-1]:
+				print(str(increment)+".  Table: "+line[0]+"  dependance fonctionnelle: "+line[1]+" --> "+line[2])
+				increment  += 1
+			print("quelle(s) lignes voulez-vous supprimer?")
+			nbre = input("numero de la ligne si plusieurs separez les nombre par des espaces) : ")
+			
+			for i in nbre.split()		
+				
+				if i != " ":
+					i = int(i)
+					dbh.removeDep(getInutileDf()[option-1][i -1][0],getInutileDf()[option-1][i -1][1],getInutileDf()[option-1][i -1][2]):
+					#retour remove verif
+
+		elif option = 4:
+			print("les df suivantes vont etre supprimees")
+			increment = 1
+			h = 0
+			while h <=2:
+				for line in getInutileDf()[h]:
+					print(str(increment)+".  Table: "+line[0]+"  dependance fonctionnelle: "+line[1]+" --> "+line[2])
+					increment += 1
+				h += 1
+
+			choice = input("voulez-vous continuer? (Y/N) : ")
+			
+			if choice == "Y" or choice == "y":
+				i = 0
+				
+				while i <=2:
+					
+					for j in range(0,len(getInutileDf()[i])-1):
+						dbh.removeDep(getInutileDf()[i][j][0],getInutileDf()[i][j][1],getInutileDf()[i][j][2]):
+					i+=1
+			
+			elif choice == "N" or choice == "n":
+				analyse()
+
+			else:
+				error = input("error integer")
+				analyse()
+	elif option == 5:
+		analyse()
+	else:
+		error=input("error integer")
+		analyse()
+
+except ValueError:
+	except_error=input("invalid syntax, try again")
+	analyse()
+
+
+def getDecomposition3nf(self, table): #pour l honneur
+
+		tabcle = self.getCle(table)
+		tabcle.sort(key=len)
+		#print(str(tabcle))
+		tablecouv = self.getCouvertureMinimale(table)
+		#print("base :"+str(tablecouv))
+		cleanTable= self.cleanDep(tablecouv)
+		#print("clean :"+str(tablecouv))
+		cleanTable.sort()
+
+		newtable = []
+		tableprov = []
+		#print("trie: "+str(tablecouv))
+		
+		tableprov.append(cleanTable[0])
+		cleanTable.pop(0)
+		for df in cleanTable:
+			if df[0] == tableprov[0][0]:
+				tableprov.append(df)
+			else:
+				newtable.append(tableprov)
+				tableprov = []
+				tableprov.append(df)
+		newtable.append(tableprov)
+		#print("newTable: "+str(newtable))
+		
+		tablefus = []
+		tableprov = []
+		for groupe in newtable:
+			tableprov.append(groupe[0][0])
+			tableprov.append("-->")
+			for df in groupe:
+				tableprov.append(df[1])
+			tablefus.append(tableprov)
+			tableprov = []
+
+		#print("tableau fusion : "+str(tablefus))
+		
+		
+
+		for rel in tablefus:
+			tabtestcle = []
+			#print(str(rel)+"ggggggggg")
+			for elem in rel:
+				#print(str(elem)+"hhhhhhhhh")
+				if elem != '-->':
+					tabtestcle.append(elem)
+					print(str(tabtestcle)+"test")
+					for cle in tabcle:
+						print(cle)
+						if cle[0] == tabtestcle:
+							print(tablefus)
+							return tablefus
+				else:
+					break
+				tabtestcle =[]
+			
+		
+
+		tableprov =[]
+		relcle =tabcle[len(tabcle)-1]
+		if len(relcle) == 1:
+			tablefus.append(relcle)
+			print("table finals: "+str(tablefus))
+			return tablefus
+		else:
+			tableprov.append(relcle[0])
+			relcle.pop(0)
+
+			tableprov.append("-->")
+			tableprov.extend(relcle)
+			tablefus.append(tableprov)
+			print("table final: "+str(tablefus))
+			return tablefus
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

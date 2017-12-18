@@ -209,12 +209,13 @@ class DataBaseHandler:
 		retoune les tuples de la table table qui ne respectent pas la df lhs--> rhs
 		lhs est un tuple d'attributs et rhs un str ne contenant qu'un attribut
 		"""
-
+		if type(lhs) ==str:
+			lhsTab=lhs.split()
 		s="SELECT t1.*, t2."+rhs+" FROM "+table+" t1, "+table+" t2 WHERE "
-		for attribute in lhs:
+		for attribute in lhsTab:
 			s+="t1."+attribute+" == t2."+attribute+" AND "
 		s+="t1."+rhs+" != t2."+rhs
-
+		#print(s)
 		self.cursor.execute(s)
 
 		retour=[]
