@@ -9,5 +9,5 @@ Remarques:
           
           - Lorsque vous insérez une dépendance fonctionnelle (au format: lhs-->rhs): les attributs de lhs doivent être séparés par un espace. Il ne peut y avoir qu'un seul attribut dans rhs.
          
-Le fichier testUnitaire.py contient une série de tests unitaires. Vous pouvez le lancer avec python 3.
+Le fichier testUnitaire.py dans le dossier misc contient une série de tests unitaires. Vous pouvez le lancer avec python 3.
 Les fichiers dataBaseHandler.py et dfHandler.py sont respectivement le gestionnaire de base de donnee ( qui ne doit etre utilise que par dfHandler.py) et le gestionnaire de dépendance fonctionnelle que vous pouvez utiliser dans une application tierce.
