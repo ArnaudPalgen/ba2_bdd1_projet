@@ -19,13 +19,16 @@ cursor.execute(""" INSERT INTO unif(prof, cours, heure) VALUES(?, ?, ?) """, ("j
 
 db.commit()
 
-finding=cursor.execute("""SELECT prof, cours, heure from unif WHERE prof=cours""" )
+finding=cursor.execute("""SELECT prof from unif""")
 print(cursor)
 print('-------------------------------')
 tab=[]
 for item in cursor:
 	tab.append(item)
 print(tab)
+#cursor.execute("""PRAGMA table_info(SELECT name FROM sqlite_master WHERE type='table')""")
+#for toto in cursor:
+#	print(toto)
 # #afficher tous les elements 
 # cursor.execute("""SELECT * from unif""" )
 # for rows in cursor:
