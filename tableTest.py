@@ -6,7 +6,7 @@ dataBase='tableTest'
 var1=False
 var2=False
 var3=False
-var4=False
+var4=True
 
 
 #Table1---------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -154,7 +154,7 @@ else:
 # print('----------------------------------------------------------------------------------------------------------------\n')
 #handler.getCouvertureMinimale(table2)
 #handler.getDecomposition3nf(table2)
-var5=True
+var5=False
 
 if var5: #table pour decomposition exemple 20 cours
 	#creation de table lettre104
@@ -176,12 +176,12 @@ if var5: #table pour decomposition exemple 20 cours
 	db.close()
 handler=DfHandler(dataBase)
 
-cle5=handler.getCle('prof')
-troisNf5=handler.is3nf('prof')
-bcnf5=handler.isBcnf('prof')
+cle5=handler.getCle('lettre104')
+troisNf5=handler.is3nf('lettre104')
+bcnf5=handler.isBcnf('lettre104')
 print(cle5)
 print(troisNf5)
 print(bcnf5)
-print(handler.getCouvertureMinimale('prof'))
-decomp=handler.getDecomposition3nf('prof')
-print(decomp)
+#print(handler.getCouvertureMinimale('prof'))
+#decomp=handler.getDecomposition3nf('prof')
+#print(decomp)
