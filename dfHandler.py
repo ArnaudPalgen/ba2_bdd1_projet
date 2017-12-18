@@ -378,82 +378,113 @@ class DfHandler():
 				newDeps.append(dep)#on l'ajoute a la couverture minimale
 		return newDeps
 
-	def getDecomposition3nf(self, table):
+	# def getDecomposition3nf(self, table):
 
-		tabcle = self.getCle(table)
-		tabcle.sort(key=len)
-		#print(str(tabcle))
-		tablecouv = self.getCouvertureMinimale(table)
-		#print("base :"+str(tablecouv))
-		cleanTable= self.cleanDep(tablecouv)
-		#print("clean :"+str(tablecouv))
-		cleanTable.sort()
+	# 	tabcle = self.getCle(table)
+	# 	tabcle.sort(key=len)
+	# 	#print(str(tabcle))
+	# 	tablecouv = self.getCouvertureMinimale(table)
+	# 	#print("base :"+str(tablecouv))
+	# 	cleanTable= self.cleanDep(tablecouv)
+	# 	#print("clean :"+str(tablecouv))
+	# 	cleanTable.sort()
 
-		newtable = []
-		tableprov = []
-		#print("trie: "+str(tablecouv))
+	# 	newtable = []
+	# 	tableprov = []
+	# 	#print("trie: "+str(tablecouv))
 		
-		tableprov.append(cleanTable[0])
-		cleanTable.pop(0)
-		for df in cleanTable:
-			if df[0] == tableprov[0][0]:
-				tableprov.append(df)
-			else:
-				newtable.append(tableprov)
-				tableprov = []
-				tableprov.append(df)
-		newtable.append(tableprov)
-		#print("newTable: "+str(newtable))
+	# 	tableprov.append(cleanTable[0])
+	# 	cleanTable.pop(0)
+	# 	for df in cleanTable:
+	# 		if df[0] == tableprov[0][0]:
+	# 			tableprov.append(df)
+	# 		else:
+	# 			newtable.append(tableprov)
+	# 			tableprov = []
+	# 			tableprov.append(df)
+	# 	newtable.append(tableprov)
+	# 	#print("newTable: "+str(newtable))
 		
-		tablefus = []
-		tableprov = []
-		for groupe in newtable:
-			tableprov.append(groupe[0][0])
-			tableprov.append("-->")
-			for df in groupe:
-				tableprov.append(df[1])
-			tablefus.append(tableprov)
-			tableprov = []
+	# 	tablefus = []
+	# 	tableprov = []
+	# 	for groupe in newtable:
+	# 		tableprov.append(groupe[0][0])
+	# 		tableprov.append("-->")
+	# 		for df in groupe:
+	# 			tableprov.append(df[1])
+	# 		tablefus.append(tableprov)
+	# 		tableprov = []
 
-		#print("tableau fusion : "+str(tablefus))
+	# 	#print("tableau fusion : "+str(tablefus))
 		
 		
 
-		for rel in tablefus:
-			tabtestcle = []
-			#print(str(rel)+"ggggggggg")
-			for elem in rel:
-				#print(str(elem)+"hhhhhhhhh")
-				if elem != '-->':
-					tabtestcle.append(elem)
-					print(str(tabtestcle)+"test")
-					for cle in tabcle:
-						print(cle)
-						if cle[0] == tabtestcle:
-							print(tablefus)
-							return tablefus
-				else:
-					break
-				tabtestcle =[]
+	# 	for rel in tablefus:
+	# 		tabtestcle = []
+	# 		#print(str(rel)+"ggggggggg")
+	# 		for elem in rel:
+	# 			#print(str(elem)+"hhhhhhhhh")
+	# 			if elem != '-->':
+	# 				tabtestcle.append(elem)
+	# 				print(str(tabtestcle)+"test")
+	# 				for cle in tabcle:
+	# 					print(cle)
+	# 					if cle[0] == tabtestcle:
+	# 						print(tablefus)
+	# 						return tablefus
+	# 			else:
+	# 				break
+	# 			tabtestcle =[]
 			
 		
 
-		tableprov =[]
-		relcle =tabcle[len(tabcle)-1]
-		if len(relcle) == 1:
-			tablefus.append(relcle)
-			print("table finals: "+str(tablefus))
-			return tablefus
-		else:
-			tableprov.append(relcle[0])
-			relcle.pop(0)
+	# 	tableprov =[]
+	# 	relcle =tabcle[len(tabcle)-1]
+	# 	if len(relcle) == 1:
+	# 		tablefus.append(relcle)
+	# 		print("table finals: "+str(tablefus))
+	# 		return tablefus
+	# 	else:
+	# 		tableprov.append(relcle[0])
+	# 		relcle.pop(0)
 
-			tableprov.append("-->")
-			tableprov.extend(relcle)
-			tablefus.append(tableprov)
-			print("table final: "+str(tablefus))
-			return tablefus
+	# 		tableprov.append("-->")
+	# 		tableprov.extend(relcle)
+	# 		tablefus.append(tableprov)
+	# 		print("table final: "+str(tablefus))
+	# 		return tablefus
 
+	def getDecomposition3nf(self,table):
+		irreductible=self.getCouvertureMinimale(table)
+		newDataBase=[]
+		keys=self.getCle(table)
+		tableid=1
+		while len(irreductible)>0:
+			table=[str(tableid)]# table['numTable', [attributs], ['numTable', lhs, rhs]]
+			dep=irreductible.pop(0)
+			lhs=dep[1].split()
+			rhs=dep[2].split()
+			
+			attribute=[]
+			attribute.extend(lhs)
+			attribute.extend(rhs)
+			table.append(attribute)
+			
+			df=[str(tableid), dep[1], dep[2]]
+			table.append(df)
+
+			newDataBase.append(table)
+			tableid+=1;
+		doBreak=False
+		for cle in keys:
+			for table in newDataBase:
+				if not self.__isIn(cle, table[1]):
+					newDataBase.append([str(tableid), cle, []])
+					doBreak=True
+					break
+			if doBreak:
+				break
+		return newDataBase
 
 	def cleanDep(self, table):
 		
