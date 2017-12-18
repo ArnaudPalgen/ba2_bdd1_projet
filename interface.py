@@ -181,7 +181,7 @@ def delete():
 					
 					else:
 						error_del=input("une erreur c est produite pendant l'operation")
-						delete()
+						main_menu()
 				
 				elif verif == "N" or verif == "n":
 					main_menu()
@@ -299,26 +299,98 @@ def analyse():
 
 
 
-			elif option == 3: #a finir
+			elif option == 3:
 				cls()
-				print("quelle table voulez-vous determiner?")
-				print("-----------------------------------------------")
-				t= dbh.getAllTableInFuncDep()
-				
-				for i in t:
-					print(i)
-				print("-----------------------------------------------")
-				table_name=input("entrez le nom de la table: ")
-				
-				if table_name in t == False:
-					table_name = input("erreur de synthaxe veuillez reecrire le nom de la table :")
-				
-				else:
-					df = dbh.getDepByRelation(table_name)
-					
-					for dep in df:
-						print(dbh.satisfaitPasDF(table_name,dep[1],dep[2]))
-					a = input("voila les df non satisfaite")
+				print("que voulez-vous faire?")
+				print("1. afficher et supprimer les df ayant la table ou un argument qui n'est plus existant")
+				print("2. afficher et supprimer les df qui sont des consequences logiques")
+				print("3. afficher et supprimer les df qui ne sont pas respectees")
+				print("4. suppression de toutes les df inutiles")
+				print("5. retour au menu analyse")
+
+				try:
+					nbre = input("entrez le nbre: ")
+					option = int(nbre)
+						
+					if option <=3:
+						increment = 1
+						
+						if len(dbh.getInutileDF()[option-1]) == 0:
+							void = input("FuncDep ne contient aucune dependances inutiles")
+							analyse()
+
+						else:
+							for line in dbh.getInutileDF()[option-1]:
+								print(str(increment)+".  Table: "+line[0]+"  dependance fonctionnelle: "+line[1]+" --> "+line[2])
+								increment  += 1
+							print("quelle(s) lignes voulez-vous supprimer?")
+							nbre = input("numero de la ligne si plusieurs separez les nombre par des espaces) : ")
+							
+							for i in nbre.split():		
+								
+								if i != " ":
+									i = int(i)
+									dbh.removeDep(dbh.getInutileDF()[option-1][i -1][0],dbh.getInutileDF()[option-1][i -1][1],dbh.getInutileDF()[option-1][i -1][2])
+									if not dbh.removeDep(dbh.getInutileDF()[option-1][i -1][0],dbh.getInutileDF()[option-1][i -1][1],dbh.getInutileDF()[option-1][i -1][2]):
+										print("une erreur c'est produite lors de la suppression de la dependance : "+dbh.getInutileDF()[option-1][i -1][1]+" --> "+ dbh.getInutileDF()[option-1][i -1][2])
+										error=input("verifiez que cette dependance soit bien dans FuncDep")
+										analyse()
+							Good = input("vos df inutiles ont bien ete supprimees")
+							analyse()
+								
+
+					elif option == 4:
+						
+						if len(dbh.getInutileDF()[0]) == 0 and len(dbh.getInutileDF()[1]) == 0 and len(dbh.getInutileDF()[2]) == 0:
+							void = input("FuncDep ne contient aucune dependances inutiles")
+							analyse()
+						
+						else:
+							print("les df suivantes vont etre supprimees")
+							increment = 1
+							h = 0
+							
+							while h <=2:
+								
+								for line in dbh.getInutileDF()[h]:
+									print(str(increment)+".  Table: "+line[0]+"  dependance fonctionnelle: "+line[1]+" --> "+line[2])
+									increment += 1
+								h += 1
+
+							choice = input("voulez-vous continuer? (Y/N) : ")
+							
+							if choice == "Y" or choice == "y":
+								i = 0
+								
+								while i <=2:
+									
+									for j in range(0,len(dbh.getInutileDF()[i])-1):
+										dbh.removeDep(dbh.getInutileDF()[i][j][0],dbh.getInutileDF()[i][j][1],dbh.getInutileDF()[i][j][2])
+
+										if not dbh.removeDep(dbh.getInutileDF()[option-1][i -1][0],dbh.getInutileDF()[option-1][i -1][1],dbh.getInutileDF()[option-1][i -1][2]):
+											print("une erreur c'est produite lors de la suppression de la dependance : "+dbh.getInutileDF()[option-1][i -1][1]+" --> "+ dbh.getInutileDF()[option-1][i -1][2])
+											error=input("verifiez que cette dependance soit bien dans FuncDep")
+											analyse()
+									i+=1
+								Good = input("vos df inutiles ont bien ete supprimees")
+								analyse()
+
+							elif choice == "N" or choice == "n":
+								analyse()
+
+							else:
+								error = input("error integer")
+								analyse()
+
+					elif option == 5:
+						analyse()
+
+					else:
+						error=input("error integer")
+						analyse()
+
+				except ValueError:
+					except_error=input("invalid syntax, try again")
 					analyse()
 
 
@@ -346,7 +418,46 @@ def analyse():
 						
 						if not3NF == "Y" or not3NF == "y":
 							decomp=input("la decomposition en 3nf serait : "+ str(dbh.getDecomposition3nf(table_name)))
-							main_menu()
+
+							DataBase=input("voulez-vous creer une nouvelle base de donnee avec les decompositions? Y/N : ")
+
+							if DataBase == "N" or DataBase =="n":
+								notcreate = input("la nouvelle base de donnee n'as pas ete cree")
+								main_menu()
+
+							elif DataBase == "Y" or DataBase == "y":
+								cls()
+								name_DataBase = input("Veuillez entrer le nom de la nouvelle base de donnee : ")
+								print("voila les decompositions:")
+								print("-----------------------------------------------")
+								newDataBase =dbh.getDecomposition3nf(table_name)
+
+								for newtable in newDataBase:
+									print("nom provisoire de la table : "+newtable[0]+" qui a comme attribut : "+newtable[1]+" et comme df : "++newtable[2])
+								print("-----------------------------------------------")
+								
+
+								for i in range(0, len(newDataBase)):
+									
+									newTableName=input("veuillez modifier le nom provisoire de la table "+newDataBase[i][0]+" par celui de votre choix : ")
+									
+									if not newTableName == ||:
+										newDataBase[i][0] = newTableName
+										newDataBase[i][2][0] = newTableName
+								dbh.createNewData(name_DataBase,newDataBase)
+								
+								if dbh.createNewData(name_DataBase,newDataBase):
+									print("la nouvelle base de donnee a bien ete cree")
+									decomp = input("attention l'application continue a tourner sur l'ancienne base de donnee")
+									main_menu()
+								
+								else:
+									decomp_not= input("une erreur c'est produite lors de la creation de la nouvelle base de donnee")
+									main_menu()
+							
+							else:
+								print("erreur synthaxe")
+								analyse()
 						
 						elif not3NF == "N" or not3NF == "n":
 							analyse()

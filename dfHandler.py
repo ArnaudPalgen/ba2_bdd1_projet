@@ -29,38 +29,41 @@ class DfHandler():
 		if table not in listeTable:
 			logging.debug("n'est pas une df 1: "+table+"-"+lhs+"-"+rhs)
 			return False
-		
+		#print('here1')
 		listeAttributs=self.dbh.getTableAttribute(table)# liste des attributs de la table
 		
 		#verifie que les noms dans lhs sont des attributs de la table
-		sLhs=lhs.split(' ')
+		sLhs=lhs.split()
 		logging.debug("slhs: "+str(sLhs))
 		logging.debug("liste des attributs: "+str(listeAttributs))
 		for item in sLhs:
-			if item != ' ' and item not in listeAttributs:
+			if item not in listeAttributs:
 				logging.debug("n'est pas une df 2: "+table+"-"+lhs+"-"+rhs)
 				return False
+		#print('here2')
 
 		#verifie que rhs ne contient qu'un element 
 		if rhs.count(' ') !=0:
 			logging.debug("n'est pas une df 3: "+table+"-"+lhs+"-"+rhs)
 			return False
+		#print('here3')
 		
 		#verifie que rhs est un attribut de la table
 		if rhs not in listeAttributs:
 			logging.debug("n'est pas une df 4: "+table+"-"+lhs+"-"+rhs)
 			return False
+		#print('here4')
 		logging.debug('est une DF: '+table+"-"+lhs+"-"+rhs)
 		return True
 		
 	def __depExist(self, table, lhs, rhs):
 		r=self.dbh.getOneDep(table, lhs, rhs)
-		logging.debug("retour de getOneDep: "+str(r)+" "+str(type(r)))
-		print('isDep '+str(self.__isDep(table, lhs, rhs)))
-		print('result'+str(r))
-		return self.__isDep(table, lhs, rhs) and r != None and len(r) == 3
+		return r != None and len(r) == 3
 
 	def removeDep(self, table, lhs, rhs):
+		#print("hello")
+		#print( table+", "+lhs+", "+rhs)
+		#print(self.__depExist(table, lhs, rhs))
 		if self.__depExist(table, lhs, rhs):
 			self.dbh.removeDep(table, lhs, rhs)
 			return True	
@@ -567,7 +570,7 @@ class DfHandler():
 		else:
 			return None
 
-	def getInutileDF(self, table, lhs, rhs):
+	def getInutileDF(self, table=None, lhs=None, rhs=None):
 		
 		#si table et lhs et rhs valent None, regarde pour une df
 		
@@ -575,8 +578,9 @@ class DfHandler():
 		isConsequenceLogic=[]
 		pasRespectee=[]#[[table, lhs, rhs, [ligne qui ne respenctent pas la df]], [], [], ..., []]
 		if table==None and lhs==None and rhs == None:
-			allDf=dbh.getAllDep()
+			allDf=self.dbh.getAllDep()
 			for dep in allDf:
+				#print("dep : "+ str(dep))
 				if not self.__isDep(dep[0], dep[1], dep[2]):
 					notDf.append(dep)
 				elif self.isLogicConsequence(dep[0], dep[1], dep[2], True):
@@ -593,7 +597,7 @@ class DfHandler():
 			elif len(self.satisfaitPasDF(table, lhs, rhs)) !=0:
 				pasRespectee.append([table, lhs, rhs, self.satisfaitPasDF(table, lhs, rhs)])
 
-		return notDf, isLogicConsequence, pasRespectee
+		return notDf, isConsequenceLogic, pasRespectee
 			
 
 	def isLogicConsequence(self,table, lhs, rhs, remove):
