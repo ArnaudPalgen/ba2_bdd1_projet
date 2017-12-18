@@ -6,7 +6,9 @@ dataBase='tableTest'
 var1=False
 var2=False
 var3=False
-var4=True
+var4=False
+
+
 #Table1---------------------------------------------------------------------------------------------------------------------------------------------------------------
 table1='lettre'
 
@@ -137,18 +139,49 @@ if var4: #table en BCNF
 else:
 	print('nothing to create for table2\n')
 
-handler=DfHandler(dataBase)
+#handler=DfHandler(dataBase)
 
-cle2=handler.getCle(table2)
-superCle2=handler.getSuperCle(table2)
-troisNf2=handler.is3nf(table2)
-bcnf2=handler.isBcnf(table2)
+#cle2=handler.getCle(table2)
+#superCle2=handler.getSuperCle(table2)
+#troisNf2=handler.is3nf(table2)
+#bcnf2=handler.isBcnf(table2)
 
 # print('-------------------------------------- Table 2 ( lettre104): -------------------------------------------------')
 #print('cle: '+str(cle2))
 #print('super cles: '+str(superCle2))
 #print('\n3 nf: '+str(troisNf2))
-print('bcnf: '+(str(bcnf2)))
+#print('bcnf: '+(str(bcnf2)))
 # print('----------------------------------------------------------------------------------------------------------------\n')
 #handler.getCouvertureMinimale(table2)
 #handler.getDecomposition3nf(table2)
+var5=True
+
+if var5: #table pour decomposition exemple 20 cours
+	#creation de table lettre104
+	db=sqlite3.connect(dataBase)
+	cursor=db.cursor()
+	cursor.execute("""CREATE TABLE IF NOT EXISTS prof(A TEXT NOT NULL, B TEXT NOT NULL, C TEXT NOT NULL)""")#, D TEXT NOT NULL)""")
+	#insertion de donnees
+
+	#creation FuncDep
+	cursor.execute("""CREATE TABLE IF NOT EXISTS FuncDep('table' TEXT NOT NULL, lhs TEXT NOT NULL, rhs TEXT NOT NULL, PRIMARY KEY('table', lhs, rhs))""")
+
+	#insertion des DFs
+	
+	cursor.execute("""INSERT INTO FuncDep('table', lhs, rhs) VALUES(?,?,?)""", ('prof','A','B'))
+
+
+	
+	db.commit()
+	db.close()
+handler=DfHandler(dataBase)
+
+cle5=handler.getCle('prof')
+troisNf5=handler.is3nf('prof')
+bcnf5=handler.isBcnf('prof')
+print(cle5)
+print(troisNf5)
+print(bcnf5)
+print(handler.getCouvertureMinimale('prof'))
+decomp=handler.getDecomposition3nf('prof')
+print(decomp)
