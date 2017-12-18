@@ -445,7 +445,7 @@ def analyse():
 										newDataBase[i][2][0] = newTableName
 								
 								try:
-									dbh.createNewData(name_DataBase,newDataBase):
+									dbh.createNewData(name_DataBase,newDataBase)
 
 									print("La nouvelle base de donnee a bien ete cree")
 									decomp = input("Attention l'application continue a tourner sur l'ancienne base de donnee")
