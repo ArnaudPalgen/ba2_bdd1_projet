@@ -449,9 +449,14 @@ class DfHandler():
 	# 					if cle[0] == tabtestcle:
 	# 						print(tablefus)
 	def createNewDataBase(self,newDataBaseName, data):
-		if self.dataBaseName==newDataBase:
+		if self.dataBaseName==newDataBaseName:
 			newDataBaseName+='2'
-		shutil.copyfile(self.dataBaseName, newDataBase)
+		shutil.copyfile(self.dataBaseName, newDataBaseName)
+
+		print('data: '+str(data))
+		dbhIn=DataBaseHandler(newDataBaseName)
+		dbhIn.dropTable('FuncDep')
+		dbhIn.closeDataBase()
 		dbhIn=DataBaseHandler(newDataBaseName)
 		#dico cle=attribut et value=table
 		rep={}
@@ -461,6 +466,7 @@ class DfHandler():
 			for att in attributesList:
 				if att not in rep:
 					rep.update({att:item})
+		print('rep:'+str(rep))
 
 		for table in data:
 			oldTableName=[]
@@ -470,9 +476,17 @@ class DfHandler():
 			newTableName=table[0]
 			if newTableName in tables:
 				newTableName+='2'
+			print('newTableName: '+str(newTableName))
+			print('attribute: '+str(attributes))
+			print('oldTableName: '+str(oldTableName))
+			print('----------------------------------------')
+			print('table de dbhIn: '+str(dbhIn.getTableName()))
 			dbhIn.createTable(newTableName, attributes, oldTableName)#cree la table et y insere les donnes
 			dep=table[2]
-			dbhIn.insertDep(dep[0], dep[1], dep[2])
+			print('DEEEEP: '+str(dep))
+			if len(dep)==3:
+				dbhIn.insertDep(dep[0], dep[1], dep[2])
+		dbhIn.removeOldTable(oldTableName)
 
 
 	def getDecomposition3nf(self,table):

@@ -10,6 +10,7 @@ class DataBaseHandler:
 		self.db=sqlite3.connect(dataBase)
 		self.cursor=self.db.cursor()
 		self.cursor.execute("""CREATE TABLE IF NOT EXISTS FuncDep('table' TEXT NOT NULL, lhs TEXT NOT NULL, rhs TEXT NOT NULL, PRIMARY KEY('table', lhs, rhs))""")
+		print('table')
 		self.db.commit()
 
 	def __dataOK(*param):
@@ -29,6 +30,7 @@ class DataBaseHandler:
 			Return: la DF inseree
 
 		"""
+		print('insertDep '+table+' '+lhs+''+rhs)
 		self.cursor.execute(""" INSERT INTO FuncDep('table', lhs, rhs) VALUES(?, ?, ?) """, (table, lhs, rhs) )
 		self.db.commit()
 		self.cursor.execute("""SELECT * FROM FuncDep WHERE Funcdep.'table'=? AND lhs=? AND rhs=? """, (table, lhs, rhs))
@@ -115,8 +117,9 @@ class DataBaseHandler:
 		"""
 		self.cursor.execute("""SELECT name FROM sqlite_master WHERE type='table' """)
 		retour=[]
-		for data in self.cursor.fetchone():
-			retour.append(data)
+		for data in self.cursor:
+			retour.append(data[0])
+		print('toutes le stables: '+str(retour))	
 		return retour
 
 	def getTableAttribute(self,tableName):
@@ -271,23 +274,28 @@ class DataBaseHandler:
 			if caract[1]==attributeName:
 				return caract
 		return None
-	def createTable(tableName, attribute, oldTableName):
+	def createTable(self, tableName, attribute, oldTableName):
 		#"""CREATE TABLE FuncDep('table' TEXT NOT NULL, lhs TEXT NOT NULL, rhs TEXT NOT NULL, PRIMARY KEY('table', lhs, rhs))""")
 		dataToAdd=None
 		s="CREATE TABLE "+tableName+"( "
 		for index in range(0,len(attribute)):
 			oldTableNameI=oldTableName[index]
 			attributeName=attribute[index]
+			if oldTableNameI != 'FuncDep':
+				print(oldTableNameI)
+				print(str(self.getTableName()))
+				select="SELECT "+attributeName+" FROM "+oldTableNameI
+				print('select: '+select)
+				self.cursor.execute(select)
+				resultSelect=self.cursor.fetchall()
+				if dataToAdd==None:
+					dataToAdd=resultSelect
+				else:
+					for i in range(0,len(dataToAdd)):
+						dataToAdd[i]=dataToAdd[i]+resultSelect[i]
 			
-			select="SELECT "+attributeName+" FROM "+oldTableName
-			resultSelect=self.cursor.execute(select)
-			if dataToAdd==None:
-				dataToAdd=resultSelect
-			else:
-				for i in range(0,len(dataToAdd)):
-					dataToAdd[i]=dataToAdd[i]+resultSelect[i]
 			
-			info=self.metadataOfAttribute(oldTableName, attributeName)
+			info=self.metadataOfAttribute(oldTableNameI, attributeName)
 			s=s+attributeName+" "+info[2]+" "
 			if info[3]==1:
 				s=s+"NOT NULL"+" "
@@ -296,6 +304,7 @@ class DataBaseHandler:
 			s+=", "
 		s=s[0:len(s)-2]
 		s+=")"
+		print(s)
 		self.cursor.execute(s)#creation de la table
 		#self.cursor.execute(""" INSERT INTO FuncDep('table', lhs, rhs) VALUES(?, ?, ?) """, (table, lhs, rhs) )
 		values=""
@@ -309,6 +318,9 @@ class DataBaseHandler:
 
 		for ligne in dataToAdd:
 			self.cursor.execute(s2,ligne)
+	def removeOldTable(self,oldTableName):
 		for oldTable in oldTableName:
-			sRemove="DROP TABLE IF EXISTS "+oldTable
-			self.cursor.execute(sRemove)
+			self.dropTable(oldTable)
+	def dropTable(self, table):
+		sRemove="DROP TABLE IF EXISTS "+table
+		self.cursor.execute(sRemove)
