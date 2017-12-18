@@ -209,9 +209,10 @@ class DataBaseHandler:
 		retoune les tuples de la table table qui ne respectent pas la df lhs--> rhs
 		lhs est un tuple d'attributs et rhs un str ne contenant qu'un attribut
 		"""
-
+		if type(lhs)==str:
+			lhsTab=lhs.split()
 		s="SELECT t1.*, t2."+rhs+" FROM "+table+" t1, "+table+" t2 WHERE "
-		for attribute in lhs:
+		for attribute in lhsTab:
 			s+="t1."+attribute+" == t2."+attribute+" AND "
 		s+="t1."+rhs+" != t2."+rhs
 
@@ -261,3 +262,51 @@ class DataBaseHandler:
 		for item in self.cursor:
 			retour.append(item[0])
 		return retour
+	def metadataOfAttribute(self, table, attributeName):
+		s="""PRAGMA table_info("""+table+""")"""
+		caracts=self.cursor.execute(s)
+		for caract in self.cursor:
+			if caract[1]==attributeName:
+				return caract
+		return None
+	def createTable(tableName, attribute, oldTableName):
+		#"""CREATE TABLE FuncDep('table' TEXT NOT NULL, lhs TEXT NOT NULL, rhs TEXT NOT NULL, PRIMARY KEY('table', lhs, rhs))""")
+		dataToAdd=None
+		s="CREATE TABLE "+tableName+"( "
+		for index in range(0,len(attribute)):
+			oldTableNameI=oldTableName[index]
+			attributeName=attribute[index]
+			
+			select="SELECT "+attributeName+" FROM "+oldTableName
+			resultSelect=self.cursor.execute(select)
+			if dataToAdd==None:
+				dataToAdd=resultSelect
+			else:
+				for i in range(0,len(dataToAdd)):
+					dataToAdd[i]=dataToAdd[i]+resultSelect[i]
+			
+			info=self.metadataOfAttribute(oldTableName, attributeName)
+			s=s+attributeName+" "+info[2]+" "
+			if info[3]==1:
+				s=s+"NOT NULL"+" "
+			if info[4] != None:
+				s=s+"DEFAULT "+str(info[4])+" "
+			s+=", "
+		s=s[0:len(s)-2]
+		s+=")"
+		self.cursor.execute(s)#creation de la table
+		#self.cursor.execute(""" INSERT INTO FuncDep('table', lhs, rhs) VALUES(?, ?, ?) """, (table, lhs, rhs) )
+		values=""
+		s2="INSERT INTO "+tableName+"( "
+		for att in attribute:
+			s2=s2+att+", "
+			values=values+"?, "
+		s2=s2[0:len(s2)-2]
+		values=values[0:len(values)-2]
+		s2+=") VALUES("+values+")"
+
+		for ligne in dataToAdd:
+			self.cursor.execute(s2,ligne)
+		for oldTable in oldTableName:
+			sRemove="DROP TABLE IF EXISTS "+oldTable
+			self.cursor.execute(sRemove)

@@ -1,7 +1,7 @@
 # coding: utf-8
 from DataBaseHandler import DataBaseHandler
 import logging
-import copy
+import shutil
 #TODO verifier isLogicConsequence
 #TODO mettre un s a exist
 #TODO demander consequence logique. tout sauf celle donee ?
@@ -14,6 +14,7 @@ class DfHandler():
 	RHS='rhs'
 	def __init__(self, dataBase):
 		self.dbh=DataBaseHandler(dataBase)
+		self.dataBaseName=dataBase
 
 
 	def __isDep(self,table, lhs, rhs):
@@ -55,6 +56,8 @@ class DfHandler():
 	def __depExist(self, table, lhs, rhs):
 		r=self.dbh.getOneDep(table, lhs, rhs)
 		logging.debug("retour de getOneDep: "+str(r)+" "+str(type(r)))
+		print('isDep '+str(self.__isDep(table, lhs, rhs)))
+		print('result'+str(r))
 		return self.__isDep(table, lhs, rhs) and r != None and len(r) == 3
 
 	def removeDep(self, table, lhs, rhs):
@@ -445,6 +448,32 @@ class DfHandler():
 	# 		tablefus.append(tableprov)
 	# 		print("table final: "+str(tablefus))
 	# 		return tablefus
+	def createNewDataBase(self,newDataBaseName, data):
+		if self.dataBaseName==newDataBase:
+			newDataBaseName+='2'
+		shutil.copyfile(self.dataBaseName, newDataBase)
+		dbhIn=DataBaseHandler(newDataBaseName)
+		#dico cle=attribut et value=table
+		rep={}
+		tables=self.dbh.getTableName()
+		for item in tables:
+			attributesList=self.dbh.getTableAttribute(item)
+			for att in attributesList:
+				if att not in rep:
+					rep.update({att:item})
+
+		for table in data:
+			oldTableName=[]
+			attributes=table[1]
+			for at in attributes:
+				oldTableName.append(rep[at])
+			newTableName=table[0]
+			if newTableName in tables:
+				newTableName+='2'
+			dbhIn.createTable(newTableName, attributes, oldTableName)#cree la table et y insere les donnes
+			dep=table[2]
+			dbhIn.insertDep(dep[0], dep[1], dep[2])
+
 
 	def getDecomposition3nf(self,table):
 		irreductible=self.getCouvertureMinimale(table)
@@ -452,7 +481,7 @@ class DfHandler():
 		keys=self.getCle(table)
 		tableid=1
 		while len(irreductible)>0:
-			table=[str(tableid)]# table['numTable', [attributs], ['numTable', lhs, rhs]]
+			table=[str(tableid)]# newDataBase[['numTable', [attributs], ['numTable', lhs, rhs]],[]]
 			dep=irreductible.pop(0)
 			lhs=dep[1].split()
 			rhs=dep[2].split()
@@ -532,6 +561,7 @@ class DfHandler():
 		"""
 		retourne les lignes qui ne satisfont pas la df (table, lhs, rhs)
 		"""
+
 		if self.__depExist(table, lhs, rhs):
 			return self.dbh.DFisOk(table, lhs, rhs)
 		else:
