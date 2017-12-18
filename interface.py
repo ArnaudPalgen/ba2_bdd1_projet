@@ -433,20 +433,21 @@ def analyse():
 								newDataBase =dbh.getDecomposition3nf(table_name)
 
 								for newtable in newDataBase:
-									print("nom provisoire de la table : "+newtable[0]+" qui a comme attribut : "+newtable[1]+" et comme df : "++newtable[2])
+									print("nom provisoire de la table : "+str(newtable[0])+" qui a comme attribut : "+str(newtable[1])+" et comme df : "+str(newtable[2]))
 								print("-----------------------------------------------")
 								
 
 								for i in range(0, len(newDataBase)):
 									
-									newTableName=input("veuillez modifier le nom provisoire de la table "+newDataBase[i][0]+" par celui de votre choix : ")
+									newTableName=input("veuillez modifier le nom provisoire de la table "+str(newDataBase[i][0])+" par celui de votre choix : ")
 									
-									if not newTableName == ||:
+									if not newTableName == '':
 										newDataBase[i][0] = newTableName
-										newDataBase[i][2][0] = newTableName
-								dbh.createNewData(name_DataBase,newDataBase)
+										if len(newDataBase[i][2]) != 0: 
+											newDataBase[i][2][0] = newTableName
+								#dbh.createNewDataBase(name_DataBase,newDataBase)
 								
-								if dbh.createNewData(name_DataBase,newDataBase):
+								if dbh.createNewDataBase(name_DataBase,newDataBase):
 									print("la nouvelle base de donnee a bien ete cree")
 									decomp = input("attention l'application continue a tourner sur l'ancienne base de donnee")
 									main_menu()
@@ -603,7 +604,7 @@ def onclose():
 	fonction de fermeture d application
 	"""
 	dbh.closeDataBase()
-	os.system('cls' if os.name =='nt' else 'clear')
+	#os.system('cls' if os.name =='nt' else 'clear')
 	print("###############################################")
 	print("###############################################")
 	print("##### #####  #####  ####   ####   #    #  #####")

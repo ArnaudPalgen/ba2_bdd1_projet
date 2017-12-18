@@ -6,7 +6,7 @@ dataBase='tableTest'
 var1=False
 var2=False
 var3=False
-var4=True
+var4=False
 
 
 #Table1---------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -154,13 +154,14 @@ else:
 # print('----------------------------------------------------------------------------------------------------------------\n')
 #handler.getCouvertureMinimale(table2)
 #handler.getDecomposition3nf(table2)
-var5=False
+var5=True
 
 if var5: #table pour decomposition exemple 20 cours
 	#creation de table lettre104
 	db=sqlite3.connect(dataBase)
 	cursor=db.cursor()
 	cursor.execute("""CREATE TABLE IF NOT EXISTS prof(A TEXT NOT NULL, B TEXT NOT NULL, C TEXT NOT NULL)""")#, D TEXT NOT NULL)""")
+	cursor.execute("""INSERT INTO prof(A,B,C) VALUES(?,?,?)""",("arnaud", "benoit", "celine"))
 	#insertion de donnees
 
 	#creation FuncDep
@@ -174,14 +175,14 @@ if var5: #table pour decomposition exemple 20 cours
 	
 	db.commit()
 	db.close()
-handler=DfHandler(dataBase)
+#handler=DfHandler(dataBase)
 
-cle5=handler.getCle('lettre104')
-troisNf5=handler.is3nf('lettre104')
-bcnf5=handler.isBcnf('lettre104')
-print(cle5)
-print(troisNf5)
-print(bcnf5)
+#cle5=handler.getCle('lettre104')
+#troisNf5=handler.is3nf('lettre104')
+#bcnf5=handler.isBcnf('lettre104')
+#print(cle5)
+#print(troisNf5)
+#print(bcnf5)
 #print(handler.getCouvertureMinimale('prof'))
 #decomp=handler.getDecomposition3nf('prof')
 #print(decomp)
