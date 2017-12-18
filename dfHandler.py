@@ -128,7 +128,8 @@ class DfHandler():
 			lhsTab=lhs.split()
 			for attribute in allAttributs:
 				if attribute not in lhsTab:
-					if not self.isLogicConsequence(table, lhs, attribute):
+					if not self.isLogicConsequence(table, lhs, attribute,False):
+						print(lhs+ " "+attribute)
 						return False
 		return True
 
@@ -181,6 +182,8 @@ class DfHandler():
 	def lhs3NF(self,table):
 		tabLhs = self.dbh.getAllLhs(table)
 		tabCle = self.getCle(table)
+		#print("LHS: "+str(tabLhs))
+		#print("cle : "+str(tabCle))
 		for i in range(0,len(tabLhs)):
 			lhs=tabLhs[i]
 			if lhs.split() not in tabCle:
@@ -363,7 +366,7 @@ class DfHandler():
 		deps=newDeps
 		newDeps=[]
 		for dep in deps:
-			if not self.isLogicConsequence(dep[0], dep[1], dep[2]):# si elle n'est pas redondante
+			if not self.isLogicConsequence(dep[0], dep[1], dep[2],True):# si elle n'est pas redondante
 				newDeps.append(dep)#on l'ajoute a la couverture minimale
 		return newDeps
 
@@ -415,9 +418,10 @@ class DfHandler():
 				#print(str(elem)+"hhhhhhhhh")
 				if elem != '-->':
 					tabtestcle.append(elem)
-					#print(str(tabtestcle)+"test")
+					print(str(tabtestcle)+"test")
 					for cle in tabcle:
-						if cle[0] == tabtestcle[0]:
+						print(cle)
+						if cle[0] == tabtestcle:
 							print(tablefus)
 							return tablefus
 				else:
@@ -435,8 +439,8 @@ class DfHandler():
 		else:
 			tableprov.append(relcle[0])
 			relcle.pop(0)
-			tableprov.append("/")
-			tableprov.append(relcle)
+			tableprov.append("-->")
+			tableprov.extend(relcle)
 			tablefus.append(tableprov)
 			print("table final: "+str(tablefus))
 			return tablefus
@@ -529,11 +533,12 @@ class DfHandler():
 	"""
 			
 
-	def isLogicConsequence(self,table, lhs, rhs):
+	def isLogicConsequence(self,table, lhs, rhs, remove):
 
 		if self.__depExist(table,lhs,rhs):
 			ens=self.dbh.getDepByRelation(table)
-			ens.remove([table,lhs,rhs])
+			if remove:
+				ens.remove([table,lhs,rhs])
 			result=self.__doFermeture(ens,lhs.split())
 
 			return rhs in result

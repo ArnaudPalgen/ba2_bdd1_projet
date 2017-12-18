@@ -4,7 +4,9 @@ from dfHandler import *
 
 dataBase='tableTest'
 var1=False
-var2=True
+var2=False
+var3=False
+var4=True
 #Table1---------------------------------------------------------------------------------------------------------------------------------------------------------------
 table1='lettre'
 
@@ -53,7 +55,7 @@ else:
 # en 3 nf mais pas en bcnf
 table2='lettre104'
 
-if var2:
+if var2:  #3NF prem OK
 	#creation de table lettre104
 	db=sqlite3.connect(dataBase)
 	cursor=db.cursor()
@@ -87,6 +89,46 @@ if var2:
 	cursor.execute("""INSERT INTO FuncDep('table', lhs, rhs) VALUES(?,?,?)""", (table2,'A','C'))
 	cursor.execute("""INSERT INTO FuncDep('table', lhs, rhs) VALUES(?,?,?)""", (table2,'C D','E'))
 	cursor.execute("""INSERT INTO FuncDep('table', lhs, rhs) VALUES(?,?,?)""", (table2,'B','D'))
+	#cursor.execute("""INSERT INTO FuncDep('table', lhs, rhs) VALUES(?,?,?)""", (table2,'A','B'))
+
+	
+	db.commit()
+	db.close()
+
+if var3:
+	#creation de table lettre105 (cas pour qd tout LHS = cle)
+	db=sqlite3.connect(dataBase)
+	cursor=db.cursor()
+	cursor.execute("""CREATE TABLE IF NOT EXISTS lettre104(A TEXT NOT NULL, B TEXT NOT NULL)""")#, F TEXT NOT NULL)""")
+	#insertion de donnees
+
+	#creation FuncDep
+	cursor.execute("""CREATE TABLE IF NOT EXISTS FuncDep('table' TEXT NOT NULL, lhs TEXT NOT NULL, rhs TEXT NOT NULL, PRIMARY KEY('table', lhs, rhs))""")
+
+	#insertion des DFs
+	
+	cursor.execute("""INSERT INTO FuncDep('table', lhs, rhs) VALUES(?,?,?)""", (table2,'A','B'))
+
+	
+	db.commit()
+	db.close()
+
+
+if var4: #table en BCNF
+	#creation de table lettre104
+	db=sqlite3.connect(dataBase)
+	cursor=db.cursor()
+	cursor.execute("""CREATE TABLE IF NOT EXISTS lettre104(A TEXT NOT NULL, B TEXT NOT NULL, C TEXT NOT NULL)""")#, D TEXT NOT NULL)""")
+	#insertion de donnees
+
+	#creation FuncDep
+	cursor.execute("""CREATE TABLE IF NOT EXISTS FuncDep('table' TEXT NOT NULL, lhs TEXT NOT NULL, rhs TEXT NOT NULL, PRIMARY KEY('table', lhs, rhs))""")
+
+	#insertion des DFs
+	
+	cursor.execute("""INSERT INTO FuncDep('table', lhs, rhs) VALUES(?,?,?)""", (table2,'A B','C'))
+	cursor.execute("""INSERT INTO FuncDep('table', lhs, rhs) VALUES(?,?,?)""", (table2,'A B','D'))
+
 
 	
 	db.commit()
@@ -97,16 +139,16 @@ else:
 
 handler=DfHandler(dataBase)
 
-# cle2=handler.getCle(table2)
-# superCle2=handler.getSuperCle(table2)
-# troisNf2=handler.is3nf(table2)
-# bcnf2=handler.isBcnf(table2)
+cle2=handler.getCle(table2)
+superCle2=handler.getSuperCle(table2)
+troisNf2=handler.is3nf(table2)
+bcnf2=handler.isBcnf(table2)
 
 # print('-------------------------------------- Table 2 ( lettre104): -------------------------------------------------')
-# print('cle: '+str(cle2))
-# print('super cles: '+str(superCle2))
-# print('\n3 nf: '+str(troisNf2))
-# print('bcnf: '+(str(bcnf2)))
+#print('cle: '+str(cle2))
+#print('super cles: '+str(superCle2))
+#print('\n3 nf: '+str(troisNf2))
+print('bcnf: '+(str(bcnf2)))
 # print('----------------------------------------------------------------------------------------------------------------\n')
 #handler.getCouvertureMinimale(table2)
 #handler.getDecomposition3nf(table2)
