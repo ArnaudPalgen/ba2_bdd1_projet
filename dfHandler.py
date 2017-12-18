@@ -10,9 +10,12 @@ class DfHandler():
 	LHS='lhs'
 	RHS='rhs'
 	def __init__(self, dataBase):
+		
+		"""
+		Parametre: une dataBase
+		"""
 		self.dbh=DataBaseHandler(dataBase)
 		self.dataBaseName=dataBase
-
 
 	def __isDep(self,table, lhs, rhs):
 		"""
@@ -361,14 +364,18 @@ class DfHandler():
 		return supercle
 
 	def getCouvertureMinimale(self, table):
+		
+		"""
+		Parametre: une table
+		Return la couverture minimale ('ensemble irreductible de df')
+		"""
 		deps=self.dbh.getDepByRelation(table)
 		newDeps=[]
 		
-		#2
 		#pour chaque df fermeture( toute les df, et une partie du lhs de la df)
 		#si femeture == lhs (selectionnee) on peut la reduire a ça
-		# si non on essaye une autre partie du lhs 
-		# si tout essayé on peut pas reduire
+		#si non on essaye une autre partie du lhs 
+		#si tout essayé on ne peut pas reduire
 
 		for df in deps:
 			lhs=df[1].split()
@@ -387,7 +394,6 @@ class DfHandler():
 				else:
 					newDeps.append(df)
 
-		#3
 		deps=newDeps
 		newDeps=[]
 		for dep in deps:
@@ -395,70 +401,21 @@ class DfHandler():
 				newDeps.append(dep)#on l'ajoute a la couverture minimale
 		return newDeps
 
-	# def getDecomposition3nf(self, table):
-
-	# 	tabcle = self.getCle(table)
-	# 	tabcle.sort(key=len)
-	# 	#print(str(tabcle))
-	# 	tablecouv = self.getCouvertureMinimale(table)
-	# 	#print("base :"+str(tablecouv))
-	# 	cleanTable= self.cleanDep(tablecouv)
-	# 	#print("clean :"+str(tablecouv))
-	# 	cleanTable.sort()
-
-	# 	newtable = []
-	# 	tableprov = []
-	# 	#print("trie: "+str(tablecouv))
-		
-	# 	tableprov.append(cleanTable[0])
-	# 	cleanTable.pop(0)
-	# 	for df in cleanTable:
-	# 		if df[0] == tableprov[0][0]:
-	# 			tableprov.append(df)
-	# 		else:
-	# 			newtable.append(tableprov)
-	# 			tableprov = []
-	# 			tableprov.append(df)
-	# 	newtable.append(tableprov)
-	# 	#print("newTable: "+str(newtable))
-		
-	# 	tablefus = []
-	# 	tableprov = []
-	# 	for groupe in newtable:
-	# 		tableprov.append(groupe[0][0])
-	# 		tableprov.append("-->")
-	# 		for df in groupe:
-	# 			tableprov.append(df[1])
-	# 		tablefus.append(tableprov)
-	# 		tableprov = []
-
-	# 	#print("tableau fusion : "+str(tablefus))
-		
-		
-
-	# 	for rel in tablefus:
-	# 		tabtestcle = []
-	# 		#print(str(rel)+"ggggggggg")
-	# 		for elem in rel:
-	# 			#print(str(elem)+"hhhhhhhhh")
-	# 			if elem != '-->':
-	# 				tabtestcle.append(elem)
-	# 				print(str(tabtestcle)+"test")
-	# 				for cle in tabcle:
-	# 					print(cle)
-	# 					if cle[0] == tabtestcle:
-	# 						print(tablefus)
 	def createNewDataBase(self,newDataBaseName, data):
+		
+		"""
+		Parametre : un nom de DataBase, des donnees
+		Cree une nouvelle base de donnee avec les tables issues de la decomposition en 3NF
+		"""
+
 		if self.dataBaseName==newDataBaseName:
 			newDataBaseName+='2'
 		shutil.copyfile(self.dataBaseName, newDataBaseName)
 
-		print('data: '+str(data))
 		dbhIn=DataBaseHandler(newDataBaseName)
 		dbhIn.dropTable('FuncDep')
 		dbhIn.closeDataBase()
 		dbhIn=DataBaseHandler(newDataBaseName)
-		#dico cle=attribut et value=table
 		rep={}
 		tables=self.getTableName()
 		for item in tables:
@@ -466,7 +423,6 @@ class DfHandler():
 			for att in attributesList:
 				if att not in rep:
 					rep.update({att:item})
-		print('rep:'+str(rep))
 
 		for table in data:
 			oldTableName=[]
@@ -476,20 +432,19 @@ class DfHandler():
 			newTableName=table[0]
 			if newTableName in tables:
 				newTableName+='2'
-			print('newTableName: '+str(newTableName))
-			print('attribute: '+str(attributes))
-			print('oldTableName: '+str(oldTableName))
-			print('----------------------------------------')
-			print('table de dbhIn: '+str(dbhIn.getTableName()))
-			dbhIn.createTable(newTableName, attributes, oldTableName)#cree la table et y insere les donnes
+
+			dbhIn.createTable(newTableName, attributes, oldTableName)#cree la table et y insere les donnees
 			dep=table[2]
-			print('DEEEEP: '+str(dep))
 			if len(dep)==3:
 				dbhIn.insertDep(dep[0], dep[1], dep[2])
 		dbhIn.removeOldTable(oldTableName)
 
-
 	def getDecomposition3nf(self,table):
+
+		"""
+		Parametre: une table
+		Return la decomposition en 3NF de la table
+		"""
 		irreductible=self.getCouvertureMinimale(table)
 		newDataBase=[]
 		keys=self.getCle(table)
@@ -522,58 +477,28 @@ class DfHandler():
 		return newDataBase
 
 	def cleanDep(self, table):
+
+		"""
+		Parametre : une table
+		Return les df de cette table sans le parametre table dedans
+		"""
 		
 		for df in table:
 			df.pop(0)
 		return table
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-		# deps=self.dbh.getDepByRelation(table)
-		# cles=self.getCle(table)
-		# table=[]
-		# newTable=[]
-		# for dep in deps:
-		# 	cleanDep=dep[1].split()
-		# 	cleanDep.append(dep[2])
-		# 	if cleanDep not in table:
-		# 		table.append(cleanDep)
-		# for cle in cles:
-		# 	if cle not in table:
-		# 		table.append(cle)
-		# table.sort(key=len)
-		# print(table)
-		# while len(table)>0:
-		# 	elem=table.pop(0)
-		# 	isInclude=False
-		# 	for item in table:
-		# 		if len(item)>len(elem) and self.__isIn(elem, item):
-		# 			isInclude=True
-		# 			break
-		# 	if not isInclude:
-		# 		newTable.append(elem)
-
-
-		print('Decomposition 3nf:'+str(newTable))
-
 	def closeDataBase(self):
+		
+		"""
+		ferme la base de donnee
+		"""
 		self.dbh.closeDataBase()
 
-
 	def satisfaitPasDF(self, table, lhs, rhs):
+		
 		"""
-		retourne les lignes qui ne satisfont pas la df (table, lhs, rhs)
+		Parametre: une certaine df
+		Return les lignes qui ne satisfont pas la df (table, lhs, rhs)
 		"""
 
 		if self.__depExist(table, lhs, rhs):
@@ -583,15 +508,17 @@ class DfHandler():
 
 	def getInutileDF(self, table=None, lhs=None, rhs=None):
 		
+		"""
+		Parametre: une certaine df
+		Return les df qui sont inutiles (celles dont des arguments n'existent plus, les conséq logiques et celle qi ne respectent pas la table)
+		"""
 		#si table et lhs et rhs valent None, regarde pour une df
-		
 		notDf=[]
 		isConsequenceLogic=[]
 		pasRespectee=[]#[[table, lhs, rhs, [ligne qui ne respenctent pas la df]], [], [], ..., []]
 		if table==None and lhs==None and rhs == None:
 			allDf=self.dbh.getAllDep()
 			for dep in allDf:
-				#print("dep : "+ str(dep))
 				if not self.__isDep(dep[0], dep[1], dep[2]):
 					notDf.append(dep)
 				elif self.isLogicConsequence(dep[0], dep[1], dep[2], True):
@@ -610,9 +537,12 @@ class DfHandler():
 
 		return notDf, isConsequenceLogic, pasRespectee
 			
-
 	def isLogicConsequence(self,table, lhs, rhs, remove):
 
+		"""
+		Parametre: une certaine df et un booleen
+		retourn True si elle est une conséq logique, False sinon
+		"""
 		if self.__depExist(table,lhs,rhs):
 			ens=self.dbh.getDepByRelation(table)
 			if remove:
@@ -622,34 +552,14 @@ class DfHandler():
 			return rhs in result
 		else:
 			return None
-
-	# def __doFermeture(self, dFs, x):
-	# 	"""
-	# 	retourne la fermeture de l'ensemble x d'attribut par rapport a un ensemble dfs de DFs
-	# 	"""
-	# 	print('IN FERMETURE ----------------------------------------------------------------------------')
-	# 	reste=copy.deepcopy(dFs)#ensemble de tuple ( DF )
-	# 	fermeture=copy.deepcopy(x) #ensemble d'attributs
-	# 	print('receive reste: '+str(reste))
-	# 	print('receive fermeture '+str(fermeture))
-	# 	print('rentre boucle --------------------------------------------------------------------------------')
-	# 	while len(reste)>0:
-	# 		couple=reste[0]
-	# 		w=couple[1]
-	# 		z=couple[2]
-	# 		print('w= '+w)
-	# 		print('z= '+z)
-	# 		print('fermeture: '+str(fermeture))
-	# 		if self.__isIn(w.split(),fermeture):
-	# 			print('w is in fermeture')
-	# 			reste.remove(couple)
-	# 			if z not in fermeture:
-	# 				fermeture.append(z)
-	# 		else:
-	# 			break
-	# 		print('fermeture apres '+str(fermeture))
-		# 	return fermeture
+	
 	def __doFermeture(self, dFs, x):
+		
+		"""
+		Parametre : une df et un attribut
+		Return la fermeture de l'ensemble d attribut par rapport a l'ensemble de df
+		"""
+
 		df=copy.deepcopy(dFs)
 		newDep=copy.deepcopy(x)
 		oldDep=None
@@ -667,6 +577,7 @@ class DfHandler():
 
 	def __isIn(self,small, big):
 		"""
+		Parametre: 1 element inclus dans un autre
 		Return True if small is in big else return False
 		"""
 		for sItem in small:
