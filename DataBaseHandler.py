@@ -10,10 +10,12 @@ class DataBaseHandler:
 		self.db=sqlite3.connect(dataBase)
 		self.cursor=self.db.cursor()
 		self.cursor.execute("""CREATE TABLE IF NOT EXISTS FuncDep('table' TEXT NOT NULL, lhs TEXT NOT NULL, rhs TEXT NOT NULL, PRIMARY KEY('table', lhs, rhs))""")
-		print('table')
 		self.db.commit()
 
 	def __dataOK(*param):
+		"""
+		raise TypeError si un des parametres n'est pas du type str
+		"""
 		for item in param:
 			if(type(item)!=str):
 				raise TypeError("Le type du parametre n'est pas str")
@@ -24,13 +26,13 @@ class DataBaseHandler:
 		""" 
 		Insere une DF dans la table FuncDep
 
-			Param: la table a laquelle appartient la DF: table
-					lhs, le membre de gauche de la DF
-					rhs, lemembre de droite de la DF 
+			Param: 
+					table: la table a laquelle appartient la DF
+					lhs: le membre de gauche de la DF
+					rhs: lemembre de droite de la DF 
 			Return: la DF inseree
 
 		"""
-		print('insertDep '+table+' '+lhs+''+rhs)
 		self.cursor.execute(""" INSERT INTO FuncDep('table', lhs, rhs) VALUES(?, ?, ?) """, (table, lhs, rhs) )
 		self.db.commit()
 		self.cursor.execute("""SELECT * FROM FuncDep WHERE Funcdep.'table'=? AND lhs=? AND rhs=? """, (table, lhs, rhs))
@@ -47,9 +49,10 @@ class DataBaseHandler:
 		""" 
 		Supprime une DF dans la table FuncDep
 
-			Param: la table a laquelle appartient la DF: table
-					lhs, le membre de gauche de la DF
-					rhs, lemembre de droite de la DF 
+			Param: 
+					table: la table a laquelle appartient la DF
+					lhs: le membre de gauche de la DF
+					rhs: lemembre de droite de la DF 
 
 
 		"""
@@ -64,10 +67,11 @@ class DataBaseHandler:
 		""" 
 		Modifie la table d'une DF dans la table FuncDep
 
-			Param: la table a laquelle appartient la DF: table
-					lhs, le membre de gauche de la DF
-					rhs, lemembre de droite de la DF
-					newTable, le nom de la nouvelle table 
+			Param: 
+					table: la table a laquelle appartient la DF
+					lhs:  le membre de gauche de la DF
+					rhs:  lemembre de droite de la DF
+					newTable: le nom de la nouvelle table 
 			Return: la DF modifiee TODO
 
 
@@ -81,9 +85,10 @@ class DataBaseHandler:
 		""" 
 		Modifie la partie de gauche d'une DF dans la table FuncDep
 
-			Param: la table a laquelle appartient la DF: table
-					lhs, le membre de gauche de la DF
-					rhs, lemembre de droite de la DF
+			Param: 
+					table: la table a laquelle appartient la DF
+					lhs: le membre de gauche de la DF
+					rhs: lemembre de droite de la DF
 					newLhs, le nom de la nouvelle partie de gauche de la DF 
 			Return: la DF modifiee TODO
 
@@ -98,9 +103,10 @@ class DataBaseHandler:
 		""" 
 		Modifie la partie de droite d'une DF dans la table FuncDep
 
-			Param: la table a laquelle appartient la DF: table
-					lhs, le membre de gauche de la DF
-					rhs, lemembre de droite de la DF
+			Param: 
+					table: la table a laquelle appartient la DF
+					lhs: le membre de gauche de la DF
+					rhs: lemembre de droite de la DF
 					newRhs, le nom de la nouvelle partie de droite de la DF 
 			Return: la DF modifiee TODO
 
@@ -119,7 +125,6 @@ class DataBaseHandler:
 		retour=[]
 		for data in self.cursor:
 			retour.append(data[0])
-		print('toutes le stables: '+str(retour))	
 		return retour
 
 	def getTableAttribute(self,tableName):
@@ -127,7 +132,7 @@ class DataBaseHandler:
 		""" 
 		Retourne les attributs d'une table de la base de donnee
 
-			Param: tableName le nom de la table
+			Param: tableName: le nom de la table
 			Return: Un tableau contenant le noms des attributs de la table TableName
 
 		"""
@@ -145,9 +150,11 @@ class DataBaseHandler:
 		"""
 		Retourne une DF si elle existe. Si non retourne un tableau vide
 
-			Param: la table a laquelle appartient la DF: table
-					lhs, le membre de gauche de la DF
-					rhs, lemembre de droite de la DF
+			Param: 
+					table: la table a laquelle appartient la DF
+					lhs: le membre de gauche de la DF
+					rhs: lemembre de droite de la DF
+
 			Return: un tableau contenant la DF. Si elle n'existe pas, le tableau est vide
 		"""
 		self.cursor.execute("""SELECT * FROM FuncDep WHERE FuncDep.'table'=? AND lhs=? AND rhs=? """, (table, lhs, rhs))
@@ -165,7 +172,7 @@ class DataBaseHandler:
 		""" 
 		Retourne toutes les DF d'une table
 
-			Param: relation un nom d'une table de la base de donnee ??diff de funcDep ????
+			Param: relation un nom d'une table de la base de donnee
 			Return: un tableau contenant toutes les DFs associees a la table relation
 
 		"""
@@ -180,6 +187,9 @@ class DataBaseHandler:
 			
 		return retour
 	def closeDataBase(self):
+		"""
+		Ferme la base de donnee
+		"""
 		self.db.close()
 		cursor=None
 
@@ -191,11 +201,6 @@ class DataBaseHandler:
 
 		"""
 		retour=[]
-		#rels=getTableName()
-		#for tables in rels:
-		#	deps=getDep(tables)
-		#	for lines in deps:
-		#		retour.append(lines)
 
 		self.cursor.execute(""" SELECT * FROM FuncDep""")
 
@@ -211,6 +216,10 @@ class DataBaseHandler:
 		"""
 		retoune les tuples de la table table qui ne respectent pas la df lhs--> rhs
 		lhs est un tuple d'attributs et rhs un str ne contenant qu'un attribut
+		Param: 
+			table: la table a laquelle appartient la DF
+			lhs: le membre de gauche de la DF
+			rhs: lemembre de droite de la DF
 		"""
 		
 		if type(lhs)==str:
@@ -220,7 +229,6 @@ class DataBaseHandler:
 		for attribute in lhsTab:
 			s+="t1."+attribute+" == t2."+attribute+" AND "
 		s+="t1."+rhs+" != t2."+rhs
-		#print(s)
 		self.cursor.execute(s)
 
 		retour=[]
@@ -236,6 +244,8 @@ class DataBaseHandler:
 		DataBaseHandler.__dataOK(table)
 		"""
 		retourne tous les lhs pour une table donnee
+		Param:
+			table: la table pour laquelle les lhs seront retournes
 		"""
 
 		self.cursor.execute(""" SELECT lhs FROM FuncDep WHERE FuncDep.'table' == ? """ ,(table,))
@@ -249,6 +259,8 @@ class DataBaseHandler:
 		DataBaseHandler.__dataOK(table)
 		"""
 		retourne tous les lhs pour une table donnee
+		Param:
+			table: la table pour laquelle tous les rhs seront retournes
 		"""
 
 		self.cursor.execute(""" SELECT rhs FROM FuncDep WHERE FuncDep.'table' == ? """ ,(table,))
@@ -268,6 +280,12 @@ class DataBaseHandler:
 			retour.append(item[0])
 		return retour
 	def metadataOfAttribute(self, table, attributeName):
+		"""
+		Rretourne les caracteristiques (cid, tableName, type, not null, default value, primary key ) d'un attribut donne d'une table donnee
+		Param:
+			table: la table qui contient l'attribut
+			attributeName: l'attribut pour lequel on souhaite obtenir les caracteristiques
+		"""
 		s="""PRAGMA table_info("""+table+""")"""
 		caracts=self.cursor.execute(s)
 		for caract in self.cursor:
@@ -275,17 +293,22 @@ class DataBaseHandler:
 				return caract
 		return None
 	def createTable(self, tableName, attribute, oldTableName):
-		#"""CREATE TABLE FuncDep('table' TEXT NOT NULL, lhs TEXT NOT NULL, rhs TEXT NOT NULL, PRIMARY KEY('table', lhs, rhs))""")
-		dataToAdd=None
-		s="CREATE TABLE "+tableName+"( "
+		"""
+		Cree un nouvelle table et y insere les donnees des attributs correspondants
+		Param:
+			tableName: le nom de la nouvelle table
+			attribute: tableau des attributs de la nouvelle table
+			oldTableName: le nom de l'ancienne table pour chaque attributs de attribute
+		"""
+		dataToAdd=None#tableau contenant les lignes (tuples) a ajouter a la table
+		s="CREATE TABLE "+tableName+"( "#s est une str pour la requete sql de creation de table
 		for index in range(0,len(attribute)):
 			oldTableNameI=oldTableName[index]
 			attributeName=attribute[index]
+
+			#on selectionne les donnees a ajouter et on l'ajoute a dataToAdd
 			if oldTableNameI != 'FuncDep':
-				print(oldTableNameI)
-				print(str(self.getTableName()))
 				select="SELECT "+attributeName+" FROM "+oldTableNameI
-				print('select: '+select)
 				self.cursor.execute(select)
 				resultSelect=self.cursor.fetchall()
 				if dataToAdd==None:
@@ -294,8 +317,8 @@ class DataBaseHandler:
 					for i in range(0,len(dataToAdd)):
 						dataToAdd[i]=dataToAdd[i]+resultSelect[i]
 			
-			
-			info=self.metadataOfAttribute(oldTableNameI, attributeName)
+			#finalisation de la str s
+			info=self.metadataOfAttribute(oldTableNameI, attributeName)# infos sur l'attribut ( type, not null, valeur par defaut)
 			s=s+attributeName+" "+info[2]+" "
 			if info[3]==1:
 				s=s+"NOT NULL"+" "
@@ -304,10 +327,8 @@ class DataBaseHandler:
 			s+=", "
 		s=s[0:len(s)-2]
 		s+=")"
-		print(s)
 		self.cursor.execute(s)#creation de la table
-		#self.cursor.execute(""" INSERT INTO FuncDep('table', lhs, rhs) VALUES(?, ?, ?) """, (table, lhs, rhs) )
-		values=""
+		values=""# chaine pour inserer les donnees
 		s2="INSERT INTO "+tableName+"( "
 		for att in attribute:
 			s2=s2+att+", "
@@ -316,11 +337,21 @@ class DataBaseHandler:
 		values=values[0:len(values)-2]
 		s2+=") VALUES("+values+")"
 
-		for ligne in dataToAdd:
+		for ligne in dataToAdd:#on insere chaque ligne
 			self.cursor.execute(s2,ligne)
 	def removeOldTable(self,oldTableName):
+		"""
+		Supprime les tables de la liste oldTableName
+		Param: 
+				oldTableName: tableau de noms des tables a supprimer
+		"""
 		for oldTable in oldTableName:
 			self.dropTable(oldTable)
 	def dropTable(self, table):
+		"""
+		Supprime la table table de la base de donnes
+		Param:
+			table: le nom de la table a supprimer
+		"""
 		sRemove="DROP TABLE IF EXISTS "+table
 		self.cursor.execute(sRemove)

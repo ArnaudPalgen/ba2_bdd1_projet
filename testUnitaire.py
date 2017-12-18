@@ -37,16 +37,13 @@ class DfTest(unittest.TestCase):
 
 		
 
-		# self.table3NFPrem='table3'
-		# self.cursor.execute("""CREATE TABLE table3(A TEXT NOT NULL, B TEXT NOT NULL, C TEXT NOT NULL, D text NOT NULL, E text NOT NULL)""")
-		# self.cursor.execute(""" INSERT INTO table3(A,B,C,D,E) VALUES(?,?,?,?,?)""",("aa", "bb", "cc","dd","ee") )
-		# self.cursor.execute(""" INSERT INTO table3(A,B,C,D,E) VALUES(?,?,?,?,?)""",("aaa", "bbb", "ccc","ddd","eee") )
+		self.table3NFPrem='table3'
+		self.cursor.execute("""CREATE TABLE table3(A TEXT NOT NULL, B TEXT NOT NULL, C TEXT NOT NULL)""")
+		self.cursor.execute(""" INSERT INTO table3(A,B,C) VALUES(?,?,?)""",("aa", "bb", "cc") )
 
-		# self.cursor.execute("""CREATE TABLE IF NOT EXISTS FuncDep('table' TEXT NOT NULL, lhs TEXT NOT NULL, rhs TEXT NOT NULL, PRIMARY KEY('table', lhs, rhs))""")
-		# self.cursor.execute("""INSERT INTO FuncDep('table', lhs, rhs) VALUES(?,?,?)""", (self.table3NFPrem,'A','B'))
-		# self.cursor.execute("""INSERT INTO FuncDep('table', lhs, rhs) VALUES(?,?,?)""", (self.table3NFPrem,'A','C'))
-		# self.cursor.execute("""INSERT INTO FuncDep('table', lhs, rhs) VALUES(?,?,?)""", (self.table3NFPrem,'C D','E'))
-		# self.cursor.execute("""INSERT INTO FuncDep('table', lhs, rhs) VALUES(?,?,?)""", (self.table3NFPrem,'B','D'))
+		self.cursor.execute("""CREATE TABLE IF NOT EXISTS FuncDep('table' TEXT NOT NULL, lhs TEXT NOT NULL, rhs TEXT NOT NULL, PRIMARY KEY('table', lhs, rhs))""")
+		self.cursor.execute("""INSERT INTO FuncDep('table', lhs, rhs) VALUES(?,?,?)""", (self.table3NFPrem,'A','B'))
+
 
 
 		
@@ -64,18 +61,20 @@ class DfTest(unittest.TestCase):
 
 	def testBcnf(self):
 		self.assertTrue(self.dbh.isBcnf(self.tableBCNF))
+		self.assertFalse(self.dbh.isBcnf(self.table3NFPrem))
 		
 	def dfVerifiee(self):
 		self.assertEqual(self.dbh.satisfaitPasDF(self.tableDfVerifiee, "nom age", "matricule"), [["157825", "jean", "18"], ["475624", "jean", "18"]])
 	def test3nf(self):
 		self.assertTrue(self.dbh.is3nf(self.tableBCNF))
 		self.assertTrue(self.dbh.is3nf(self.table3NFLhs))
+		self.assertFalse(self.dbh.is3nf(self.table3NFPrem))
 	def testCle(self):
-		self.assertEqual((self.dbh.getCle(self.table3NFLhs)),[[A]])
+		self.assertEqual((self.dbh.getCle(self.table3NFLhs)),[['A']])
 	def testSuperCle(self):
-		self.assertEqual((self.dbh.getSuperCle(self.table3NFLhs)),[[A,B],[A]])
+		self.assertEqual((self.dbh.getSuperCle(self.table3NFLhs)),[['A','B'],['A']])
 	def testDecomposition(self):
-		sel.assertEqual((getDecomposition3nf(self)), )
+		self.assertEqual(self.dbh.getDecomposition3nf(self.table3NFPrem),[['1', ['A','B'], ['1', 'A', 'B']], ['2', ['A', 'C'], []]] )
 
 	def tearDown(self):
 		self.db.close()
