@@ -500,7 +500,7 @@ class DfHandler():
 			return self.dbh.DFisOk(table, lhs, rhs)
 		else:
 			return None
-	"""		
+
 	def getInutileDF(self, table, lhs, rhs):
 		
 		#si table et lhs et rhs valent None, regarde pour une df
@@ -515,7 +515,7 @@ class DfHandler():
 					notDf.append(dep)
 				elif self.isLogicConsequence(dep[0], dep[1], dep[2]):
 					logic.append(dep)
-				elif self.satisfaitPasDF(dep[0], dep[1], dep[2]) est non vide:#TODO
+				elif len(self.satisfaitPasDF(dep[0], dep[1], dep[2]))!=0:
 					retour=self.satisfaitPasDF(dep[0], dep[1], dep[2])
 					tab=[dep, retour]
 					pasRespectee.append(tab)
@@ -524,9 +524,10 @@ class DfHandler():
 				notDf.append([table, lhs, rhs])
 			elif self.isLogicConsequence(table, lhs, rhs):
 				isConsequenceLogic.append([table, lhs, rhs])
+			elif len(self.satisfaitPasDF(table, lhs, rhs)) !=0:
+				pasRespectee.append([table, lhs, rhs, self.satisfaitPasDF(table, lhs, rhs)])
 
 		return notDf, isLogicConsequence, pasRespectee
-	"""
 			
 
 	def isLogicConsequence(self,table, lhs, rhs):

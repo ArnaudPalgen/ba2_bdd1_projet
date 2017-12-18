@@ -18,6 +18,14 @@ cursor.execute(""" INSERT INTO unif(prof, cours, heure) VALUES(?, ?, ?) """, ("j
 cursor.execute(""" INSERT INTO unif(prof, cours, heure) VALUES(?, ?, ?) """, ("jean", "anglais", 988) )
 
 db.commit()
+
+finding=cursor.execute("""SELECT prof, cours, heure from unif WHERE prof=cours""" )
+print(cursor)
+print('-------------------------------')
+tab=[]
+for item in cursor:
+	tab.append(item)
+print(tab)
 # #afficher tous les elements 
 # cursor.execute("""SELECT * from unif""" )
 # for rows in cursor:
