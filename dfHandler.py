@@ -435,7 +435,7 @@ class DfHandler():
 		else:
 			tableprov.append(relcle[0])
 			relcle.pop(0)
-			tableprov.append("/")
+			tableprov.append("-->")
 			tableprov.append(relcle)
 			tablefus.append(tableprov)
 			print("table final: "+str(tablefus))
