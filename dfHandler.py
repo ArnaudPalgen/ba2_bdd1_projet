@@ -2,11 +2,8 @@
 from DataBaseHandler import DataBaseHandler
 import logging
 import shutil
-#TODO verifier isLogicConsequence
-#TODO mettre un s a exist
-#TODO demander consequence logique. tout sauf celle donee ?
-#logging.basicConfig(filename='logs/log1.log',level=logging.DEBUG,\
-#      format='%(asctime)s -- %(name)s -- %(levelname)s -- %(message)s')
+import copy
+
 class DfHandler():
 	"""docstring for DfHandler"""
 	TABLE='table'
@@ -22,62 +19,71 @@ class DfHandler():
 		Parametres: lhs et rhs str nettoyés !!
 		Return True si la table existe, lhs et rhs sont des attributs de la table
 		"""
-		#TODO verifier rhs ne contient pas d'erreur
 		
-		#verifie que table est bien le nom d'une table
-		listeTable=self.dbh.getTableName()
+		listeTable=self.getTableName()
+		
 		if table not in listeTable:
-			logging.debug("n'est pas une df 1: "+table+"-"+lhs+"-"+rhs)
 			return False
-		#print('here1')
 		listeAttributs=self.dbh.getTableAttribute(table)# liste des attributs de la table
 		
+
 		#verifie que les noms dans lhs sont des attributs de la table
 		sLhs=lhs.split()
-		logging.debug("slhs: "+str(sLhs))
-		logging.debug("liste des attributs: "+str(listeAttributs))
+		
 		for item in sLhs:
 			if item not in listeAttributs:
-				logging.debug("n'est pas une df 2: "+table+"-"+lhs+"-"+rhs)
 				return False
-		#print('here2')
+
 
 		#verifie que rhs ne contient qu'un element 
 		if rhs.count(' ') !=0:
-			logging.debug("n'est pas une df 3: "+table+"-"+lhs+"-"+rhs)
 			return False
-		#print('here3')
 		
+
 		#verifie que rhs est un attribut de la table
 		if rhs not in listeAttributs:
-			logging.debug("n'est pas une df 4: "+table+"-"+lhs+"-"+rhs)
 			return False
-		#print('here4')
-		logging.debug('est une DF: '+table+"-"+lhs+"-"+rhs)
 		return True
 		
 	def __depExist(self, table, lhs, rhs):
+
+		"""
+		Parametres: une certaine df
+		Return True si la df existe, False sinon
+		"""
+
 		r=self.dbh.getOneDep(table, lhs, rhs)
 		return r != None and len(r) == 3
 
 	def removeDep(self, table, lhs, rhs):
-		#print("hello")
-		#print( table+", "+lhs+", "+rhs)
-		#print(self.__depExist(table, lhs, rhs))
+		
+		"""
+		Parametres: une certaine df
+		Return True si la df a bien ete supprimee, False sinon
+		"""
+		#verifie que la df a bien ete supprimee
 		if self.__depExist(table, lhs, rhs):
 			self.dbh.removeDep(table, lhs, rhs)
 			return True	
 		else:
 			return False
 		
-
 	def getAllDep(self):
+
+		"""
+		Return toutes les dependances de FuncDep
+		"""
 		return self.dbh.getAllDep()
 
 	def insertDep(self, table, lhs, rhs):
+
+		"""
+		Parametres: une certaine df
+		Return True si la df a pu etre ajoutee, False sinon
+		"""
 		if self.__isDep(table, lhs, rhs) and not self.__depExist(table, lhs, rhs):
 			r=self.dbh.insertDep(table, lhs, rhs)
-			if r != None:#TODO verifier que r contient quelque chose
+			if r != None:
 				return True
 			else:
 				return False
@@ -86,47 +92,49 @@ class DfHandler():
 			return False
 
 	def editDep(self, table, lhs, rhs, newData,whatModif):
-		#TODO retourner la nouvelle df
+		
+		"""
+		Parametre : une certaine df, la nouvelle donnee, ce qui doit etre modifie
+		Return True si la df a pu etre modifiee, False sinon
+		"""
 
+		#on verifie que la df existe
 		if not self.__depExist(table, lhs, rhs):#on verifie que la df existe deja
-			logging.debug("la dep n'existe pas")
 			return False
 		
+		#pour la modif de la table
 		if whatModif==DfHandler.TABLE:
-			logging.debug("appelle __isDep 1: "+" "+newData+" "+lhs+" "+rhs)
 			if not self.__isDep(newData, lhs, rhs) or self.__depExist(newData, lhs, rhs):
-				logging.debug("nouvelle DF invalide 1")
 				return False
 			else:
 				self.dbh.editTableDep(table, lhs, rhs, newData)
 				return True
 		
+		#pour la modif du Rhs 
 		elif whatModif==DfHandler.RHS:
-			logging.debug("appelle __isDep 2: "+" "+table+" "+lhs+" "+newData)
 			if not self.__isDep(table, lhs, newData) or self.__depExist(table, lhs, newData):#on verifie que la nouvelle df est bien une df
-				logging.debug("nouvelle DF invalide 2")
 				return False
 			else:#si c'est pas une df
 				self.dbh.editRhsDep(table, lhs, rhs, newData)
 				return True
 		
+		#pour modif Lhs
 		elif whatModif==DfHandler.LHS:
-			logging.debug("appelle __isDep 3: "+" "+table+" "+newData+" "+rhs)
 			if not self.__isDep(table, newData, rhs) or self.__depExist(table, newData, rhs):
-				logging.debug("nouvelle DF invalide 3")
 				return False
 			else:
 				self.dbh.ediLhsDep(table, lhs, rhs, newData)
 				return True
 		
+		#whatModif inconnu
 		else:
-			logging.debug("whatModif inconnu")
 			return False
 
 	def isBcnf(self, table):
 		"""
 		je selectionne tous les lhs je les split en un tableau 
 		il faut qu'une df lhs --> a avec a notIn lhs
+		Return True si c'est en BCNF, False sinon
 		"""
 		allLhs=self.dbh.getAllLhs(table)
 		allAttributs=self.dbh.getTableAttribute(table)
@@ -135,45 +143,50 @@ class DfHandler():
 			for attribute in allAttributs:
 				if attribute not in lhsTab:
 					if not self.isLogicConsequence(table, lhs, attribute,False):
-						print(lhs+ " "+attribute)
 						return False
 		return True
 
 	def getAllTableInFuncDep(self):
 		"""
-		retourne tous les noms de tables presentes dans la table FuncDep
+		Return tous les noms de tables presentes dans la table FuncDep
 		"""
 		return self.dbh.getAllTableInFuncDep()
+	
+	def getTableName(self):
 
-	def getDepByRelation(self,relation):
+		"""
+		Return tous les noms de table present dans la base de donnee
+		"""
+
+		return self.dbh.getTableName()
+
+	def getDepByRelation(self,table):
+
+		"""
+		Parametre: une table
+		Return toutes les dependances concernant cette table
+		"""
 
 		return self.dbh.getDepByRelation(relation)
 
 	def is3nf(self, table):
-		print("3nf premier: "+str(self.prem3NF(table)))
-		print("3NF lhs: "+str(self.lhs3NF(table)))
+
+		"""
+		Parametre: une table
+		Return True si c'est en 3NF, False sinon
+		"""
+				
 		if self.prem3NF(table) or self.lhs3NF(table):
 			return True
 		else:
 			return False
 
 	def prem3NF(self,table):
-		# tabCle = self.getCle(table) #tableau de tableau
-		# tabAttr = self.dbh.getTableAttribute(table) #tableau avec chaque attribut
-		# for i in range(0,len(tabAttr)):
-		# 	attr= tabAttr[i]  #un attribut en position i dans la table avec tous les attributs
-		# 	for j in range(0,len(tabCle)):
-		# 		cle = tabCle[j]  #une clé en position j dans la table contenant les clés
-		# 		for h in range(0,len(cle)):
-		# 			indice = cle[h]  #un elem de cle
-		# 			if indice == attr:
-		# 				i += 1
-		# 			else:
-		# 				j += 1
-		# 		j += 1
-		# 	return False
-		# return True
-
+		
+		"""
+		Parametre: une table
+		Return True si tous les attributs sont dans au moins une cle, False sinon
+		"""
 		attribute = self.dbh.getTableAttribute(table)
 		cles = self.getCle(table)
 		for att in attribute:
@@ -186,17 +199,28 @@ class DfHandler():
 		return True
 
 	def lhs3NF(self,table):
+
+		"""
+		Parametre: une table
+		Return True si tous les Lhs sont des cles, False sinon
+		"""
+		
 		tabLhs = self.dbh.getAllLhs(table)
 		tabCle = self.getCle(table)
-		#print("LHS: "+str(tabLhs))
-		#print("cle : "+str(tabCle))
+			
 		for i in range(0,len(tabLhs)):
 			lhs=tabLhs[i]
+			
 			if lhs.split() not in tabCle:
 				return False
 		return True
 
 	def __getAttributeNeverInRhs(self, table):
+		
+		"""
+		Parametre: une table
+		Return tous les attributs de cette table n'etant pas dans les Rhs des df associees a la table
+		"""
 		attribute=self.dbh.getTableAttribute(table)
 		allRhs=self.dbh.getAllRhs(table)
 		never=[]
@@ -205,8 +229,13 @@ class DfHandler():
 				never.append(item)
 		return never
 
-
 	def __canContinue(self, ligne, nbrAttribute):
+
+		"""
+		Parametre: ligne -> ligne courante de la cle, nbrAttribute -> nombre total d'attribut
+		Return True si on peut continuer, False sinon
+		"""
+		
 		if len(ligne)==0:
 			return True
 		for cle in ligne:
@@ -217,15 +246,23 @@ class DfHandler():
 		return True
 
 	def __exept(self,A,B):
+		
 		"""
-		return A\B
+		Parametre: 2 arguments
+		Return A\B
 		"""
 		retour=[]
 		for item in A:
 			if(item not in B):
 				retour.append(item)
 		return retour
+	
 	def isAKey(self, futureKey, attribute, table):
+
+		"""
+		Parametre: une possible cle, un attribut, une table
+		Return True si c'est une cle, False sinon
+		"""
 
 		att=copy.deepcopy(attribute)
 		possibleKey=copy.deepcopy(futureKey)
@@ -234,26 +271,41 @@ class DfHandler():
 		att.sort()
 
 		return result == att
+	
 	def sansBacN(self, s):
+		
+		"""
+		Parametre : un nom
+		Return le nom sans \n
+		"""
 		s2=copy.deepcopy(s)
 		if '\n' in s2:
 			s2.remove('\n')
 		return s2
+	
 	def canAddToCle(self, cles, item):
+		
+		"""
+		Parametre : une cle, un tableau
+		Return True si la cle peut etre ajoutee, False sinon
+		"""
+
 		for cle in cles:
 			if self.__isIn(cle, item):
 				return False
 		return True
 
-	def __recurseCle(self, attribute, cles, supercle, table, debug):
-		#print('-----------------------------v')
-		#print('in: '+str(supercle))
+	def __recurseCle(self, attribute, cles, supercle, table):
+		
+		"""
+		Parametre: un attribut, une cle, une supercle et une table
+		Return les cles et supercles
+		"""		
 		if (not self.__canContinue(cles, len(attribute))) or (not self.__canContinue(supercle, len(attribute))):
 			return cles, supercle
 
 		
 		if len(cles)==0 and len(supercle)==0:
-			#print('here1')
 			newLine=self.__getAttributeNeverInRhs(table)
 			newLine.sort()
 			if len(newLine)==0 :
@@ -270,12 +322,11 @@ class DfHandler():
 					cles.append(newLine)
 				if newLine not in supercle:
 					supercle.append(newLine)
-			return self.__recurseCle(attribute, cles, supercle, table, debug)
+			return self.__recurseCle(attribute, cles, supercle, table)
 		
 
 		else:
 			newSuperCle=[]
-			#print('here2')
 			for item in supercle:
 				rajout=self.__exept(attribute, item)
 				for itemToAdd in rajout:
@@ -286,60 +337,28 @@ class DfHandler():
 						cles.append(new)
 					if new not in newSuperCle:
 						newSuperCle.append(new)
-				#print(item)
 				if self.isAKey(item, attribute, table) and item not in newSuperCle:
-					#print('remove')
 					newSuperCle.append(item)
-			return self.__recurseCle(attribute, cles, newSuperCle, table, debug)
-
-		debug+=1
-		if debug==100000000000000000000000000000000000000000000:
-			exit()
-		#print('out: '+str(supercle))
-		#print('-------------------------------------------------------------------------------^')
-		
+			return self.__recurseCle(attribute, cles, newSuperCle, table)
 
 	def getCle(self, table):
-		#result=self.getSuperKeyAndKey(table)
-		cles,supercle=self.__recurseCle(self.dbh.getTableAttribute(table), [], [], table, 0)
+		
+		"""
+		Parametre : une table
+		Return les cles de la table
+		"""
+		cles,supercle=self.__recurseCle(self.dbh.getTableAttribute(table), [], [], table)
 		return cles
 
 	def getSuperCle(self, table):
-		cles,supercle=self.__recurseCle(self.dbh.getTableAttribute(table), [], [], table, 0)
+		
+		"""
+		Parametre: une table
+		Return les supercles
+		"""
+
+		cles,supercle=self.__recurseCle(self.dbh.getTableAttribute(table), [], [], table)
 		return supercle
-
-	# def cleanKey(self, keys):
-	# 	for key in keys:
-	# 		if '\n' in key:
-	# 			key.remove('\n')
-
-	# def getSuperKeyAndKey(self, table):
-	# 	attribute=self.dbh.getTableAttribute(table)
-	# 	keyAndSuperKey=self.__recurseCle(attribute, [],[], table, 0)
-	# 	keyAndSuperKey.sort(key=len)
-	# 	print(keyAndSuperKey)
-	# 	keyAndSuperKey.append('XX')
-
-	# 	key=[]
-	# 	superKey=[]
-	# 	while len(keyAndSuperKey)>1:
-	# 		cle=keyAndSuperKey.pop(0)
-	# 		key.append(cle)
-	# 		index=0
-	# 		item=keyAndSuperKey[index]
-	# 		while item != 'XX' :
-	# 			if self.__isIn(cle, item ):
-	# 				keyAndSuperKey.remove(item)
-	# 				superKey.append(item)
-	# 				item=keyAndSuperKey[index]
-
-	# 			else:
-	# 				index+=1
-	# 				item=keyAndSuperKey[index]
-
-	# 	self.cleanKey(key)
-	# 	self.cleanKey(superKey)
-	# 	return key,superKey
 
 	def getCouvertureMinimale(self, table):
 		deps=self.dbh.getDepByRelation(table)
@@ -429,28 +448,6 @@ class DfHandler():
 	# 					print(cle)
 	# 					if cle[0] == tabtestcle:
 	# 						print(tablefus)
-	# 						return tablefus
-	# 			else:
-	# 				break
-	# 			tabtestcle =[]
-			
-		
-
-	# 	tableprov =[]
-	# 	relcle =tabcle[len(tabcle)-1]
-	# 	if len(relcle) == 1:
-	# 		tablefus.append(relcle)
-	# 		print("table finals: "+str(tablefus))
-	# 		return tablefus
-	# 	else:
-	# 		tableprov.append(relcle[0])
-	# 		relcle.pop(0)
-
-	# 		tableprov.append("-->")
-	# 		tableprov.extend(relcle)
-	# 		tablefus.append(tableprov)
-	# 		print("table final: "+str(tablefus))
-	# 		return tablefus
 	def createNewDataBase(self,newDataBaseName, data):
 		if self.dataBaseName==newDataBase:
 			newDataBaseName+='2'
@@ -458,7 +455,7 @@ class DfHandler():
 		dbhIn=DataBaseHandler(newDataBaseName)
 		#dico cle=attribut et value=table
 		rep={}
-		tables=self.dbh.getTableName()
+		tables=self.getTableName()
 		for item in tables:
 			attributesList=self.dbh.getTableAttribute(item)
 			for att in attributesList:
