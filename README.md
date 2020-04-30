@@ -1,4 +1,7 @@
-# BAC2ProjetBd1
+# Projet du cours de Base de données 1
+*Auteurs*: **Arnaud Palgen, Guillaume Proot**<br />
+
+---
 Pour lancer l'application, lancez le fichier main.py avec python 3. Ensuite suivez les instructions à l'écran.
 
 Remarques:
