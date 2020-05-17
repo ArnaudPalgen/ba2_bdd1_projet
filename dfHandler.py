@@ -129,7 +129,7 @@ class DfHandler():
 				self.dbh.ediLhsDep(table, lhs, rhs, newData)
 				return True
 		
-		#whatModif inconnu
+		#Modif inconnu
 		else:
 			return False
 
